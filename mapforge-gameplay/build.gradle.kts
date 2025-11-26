@@ -16,5 +16,8 @@ dependencies {
 
     //Postgres
     runtimeOnly("org.postgresql:postgresql")
+
+    //Eureka
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 }
 
