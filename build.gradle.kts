@@ -1,5 +1,5 @@
 
-/*plugins {
+plugins {
     java
     id("org.springframework.boot") version "3.5.7" apply false
     id("io.spring.dependency-management") version "1.1.7"
@@ -8,6 +8,10 @@
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
 
 subprojects {
 
@@ -37,7 +41,7 @@ subprojects {
     }
 }
 
-dependencies {
+/*dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -66,7 +70,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
 }*/
 
-import java.util.Properties
+/*import java.util.Properties
 
 plugins {
     java
@@ -168,7 +172,7 @@ configurations {
     }*/
 }
 
-/*val props = Properties().apply {
+val props = Properties().apply {
     load(file("src/main/resources/application.yaml").inputStream())
 }*/
 
