@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS maps  (
+    id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    width INT NOT NULL,
+    height INT NOT NULL
+);
