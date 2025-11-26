@@ -1,0 +1,58 @@
+package com.example.mapforgecore.model.entity;
+
+import com.example.mapforgecore.constants.Alignment;
+import com.example.mapforgecore.constants.Race;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
+
+import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
+import java.util.Set;
+
+
+@Getter
+@Setter
+@Entity
+@Table(name = "characters")
+public class Character {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "characters"})
+    private User creator;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+    
+    @Column(name = "armor", nullable = false)
+    private Integer armor;
+    
+    @Column(name = "speed", nullable = false)
+    private Integer speed;
+    
+    @Column(name = "weapon_damage", nullable = false)
+    private Integer weaponDamage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "race", nullable = false,  columnDefinition = "race_enum")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private Race race;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "alignment", nullable = false, columnDefinition = "alignment_enum")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private Alignment alignment;
+
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<CampaignActor> campaignActors;
+
+}
