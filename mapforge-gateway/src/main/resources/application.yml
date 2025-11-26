@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mapforge-gateway
+
+  cloud:
+    gateway:     # Strips the first segment (optional, depends on your route design)
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          default-filters:
+            - StripPrefix=1
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                          allowedOrigins: "http://localhost:4200"
+                          allowedMethods:
+                            - GET
+                            - POST
+                            - PUT
+                            - DELETE
+                            - OPTIONS
+                          allowedHeaders: "*"
+                          allowCredentials: true
+                          maxAge: 3600
+eureka:
+  client:
+    register-with-eureka: true   # Gateway itself registers in Eureka
+    fetch-registry: true         # Fetch other services' registry
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
