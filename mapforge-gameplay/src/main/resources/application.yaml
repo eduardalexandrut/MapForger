@@ -1,6 +1,6 @@
 spring:
   application:
-    name: mapforge-core
+    name: mapforge-gameplay
 
   datasource:
     url: ${DB_URL}
