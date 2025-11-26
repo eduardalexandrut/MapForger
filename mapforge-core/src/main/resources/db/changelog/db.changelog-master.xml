@@ -1,0 +1,13 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+    <include file="db.changelog.sql" relativeToChangelogFile="true"/>
+    <include file="26-08-2025-add-test-column-to-users.sql" relativeToChangelogFile="true"/>
+    <include file="26-08-2025-remove-test-column-from-users.sql" relativeToChangelogFile="true"/>
+    <include file="30-08-2025-change-campaigns-pk-to-string.sql" relativeToChangelogFile="true"/>
+    <include file="31-08-2025-add-foreignkey-campaign_actor-to-campaign_member.sql" relativeToChangelogFile="true"/>
+    <include file="07-09-2025-remove-ref-id-from-campaign-actors.sql" relativeToChangelogFile="true"/>
+    <include file="07-09-2025-add-characters-and-npcs-fks-to-campaing-actors.sql" relativeToChangelogFile="true"/>
+</databaseChangeLog>
