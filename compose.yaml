@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+
+  mapforge-eureka:
+    build:
+      context: ./mapforge-eureka
+    container_name: mapforge-eureka
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://mapforge-eureka:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      POSTGRES_DB: MapForge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  mapforge-core:
+    build:
+      context: ./mapforge-core
+    container_name: mapforge-core
+    depends_on:
+      mapforge-eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-net
+
+  mapforge-gateway:
+    build:
+      context: ./mapforge-gateway
+    container_name: mapforge-gateway
+    depends_on:
+      mapforge-eureka:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
