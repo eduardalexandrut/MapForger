@@ -12,11 +12,11 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY;
+    private final String JWT_SECRET;
 
     public JwtService() {
         Dotenv dotenv = Dotenv.load();
-        SECRET_KEY = dotenv.get("JWT_SECRET");
+        JWT_SECRET = dotenv.get("JWT_SECRET");
     }
 
     public String generateToken(User user) {
@@ -25,13 +25,13 @@ public class JwtService {
                 .claim("id", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
