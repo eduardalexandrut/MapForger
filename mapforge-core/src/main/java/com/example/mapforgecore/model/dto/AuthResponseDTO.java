@@ -9,7 +9,7 @@ import lombok.Setter;
 public class AuthResponseDTO {
     private String message;
     private boolean success;
-    private User user;
+    private Integer userId;
     private String token;
 
     public AuthResponseDTO(boolean success, String message) {
@@ -17,15 +17,11 @@ public class AuthResponseDTO {
         this.message = message;
     }
 
-    public AuthResponseDTO(boolean success, String message, String token) {
+    public AuthResponseDTO(boolean success, String message, String token, Integer userId) {
         this.success = success;
         this.message = message;
         this.token = token;
+        this.userId = userId;
     }
 
-    public AuthResponseDTO(boolean success, String message, User user) {
-        this.success = success;
-        this.message = message;
-        this.user = user;
-    }
 }

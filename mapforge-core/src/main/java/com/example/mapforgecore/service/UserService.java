@@ -33,7 +33,8 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-        return new AuthResponseDTO(true, "User saved successfully", savedUser);
+        String token = jwtService.generateToken(savedUser);
+        return new AuthResponseDTO(true, "User saved successfully", token, savedUser.getId());
     }
 
     public AuthResponseDTO signIn(String email, String password) {
@@ -47,8 +48,8 @@ public class UserService {
             return new AuthResponseDTO(false, "Incorrect password");
         }
 
-        String token = jwtService.generateToken(user.get());
-        return new AuthResponseDTO(true, "User signed in successfully", token);
+        String token = getToken(user.get());
+        return new AuthResponseDTO(true, "User signed in successfully", token, user.get().getId());
     }
 
     public Set<UserSummaryDTO> getAllUsers() {
@@ -101,5 +102,9 @@ public class UserService {
 
         userRepository.deleteById(id);
         return user;
+    }
+
+    private String getToken(User user) {
+        return jwtService.generateToken(user);
     }
 }

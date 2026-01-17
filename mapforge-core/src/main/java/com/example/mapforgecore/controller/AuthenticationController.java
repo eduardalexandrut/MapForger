@@ -26,7 +26,10 @@ public class AuthenticationController  {
         if (!res.isSuccess()) {
             return ResponseEntity.badRequest().body(res.getMessage());
         }
-        return ResponseEntity.ok(Map.of("token",res.getToken()));
+        return ResponseEntity.ok(Map.of(
+                "token",res.getToken(),
+                "userId", res.getUserId()
+        ));
     }
 
     // POST /api/v1/auth/signup
@@ -37,7 +40,7 @@ public class AuthenticationController  {
         if (!res.isSuccess()) {
             return ResponseEntity.badRequest().body(res.getMessage());
         }
-        return ResponseEntity.ok(res.getUser());
+        return ResponseEntity.ok(res.getUserId());
     }
 
     //GET /api/v1/auth/signout
