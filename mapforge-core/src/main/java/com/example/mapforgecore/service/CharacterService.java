@@ -82,4 +82,9 @@ public class CharacterService {
                 .map(CampaignSummaryDTO::fromEntity)
                 .collect(Collectors.toSet());
     }
+
+    public Optional<CharacterSummaryDTO> createCharacter(CharacterSummaryDTO characterSummaryDTO) {
+        Character character = CharacterSummaryDTO.fromDTO(characterSummaryDTO);
+        return Optional.of(CharacterSummaryDTO.fromEnity(characterRepository.save(character)));
+    }
 }

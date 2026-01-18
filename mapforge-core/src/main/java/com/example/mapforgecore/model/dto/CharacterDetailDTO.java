@@ -3,6 +3,7 @@ package com.example.mapforgecore.model.dto;
 import com.example.mapforgecore.constants.Alignment;
 import com.example.mapforgecore.constants.Race;
 import com.example.mapforgecore.model.entity.Character;
+import com.example.mapforgecore.model.entity.User;
 
 import java.util.Set;
 
@@ -30,4 +31,5 @@ public record CharacterDetailDTO(
                 campaigns
         );
     }
+
 }

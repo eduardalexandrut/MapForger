@@ -34,6 +34,14 @@ public class CharacterController {
         return characterService.getCharacterById(id);
     }
 
+    // POST /api/characters -> create a character
+    @PostMapping
+    public ResponseEntity<CharacterSummaryDTO> createCharacter(@RequestBody CharacterSummaryDTO character) {
+        return characterService.createCharacter(character)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     // PUT /api/v1/characters/{id} -> update a character
     @PutMapping("/{id}")
     public ResponseEntity<CharacterDetailDTO> updateCharacter(@PathVariable Integer id, @RequestBody Character character) {

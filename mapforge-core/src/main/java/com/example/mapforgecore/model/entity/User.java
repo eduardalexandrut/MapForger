@@ -39,4 +39,16 @@ public class User {
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private Set<Character> characters;
 
+    public User(Integer id) {
+        this.id = id;
+    }
+
+    public User() {
+
+    }
+
+    public User(Integer creatorId, String creatorUsername) {
+        this.id = creatorId;
+        this.username = creatorUsername;
+    }
 }

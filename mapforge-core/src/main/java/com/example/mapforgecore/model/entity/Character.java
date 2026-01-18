@@ -55,4 +55,15 @@ public class Character {
     @JsonIgnore
     private Set<CampaignActor> campaignActors;
 
+    public Character() {}
+
+    public Character(String name, Alignment alignment, Race race, Integer armor, Integer weaponDamage, Integer speed, User user) {
+        this.name = name;
+        this.alignment = alignment;
+        this.race = race;
+        this.armor = armor;
+        this.speed = speed;
+        this.weaponDamage = weaponDamage;
+        this.creator = user;
+    }
 }
