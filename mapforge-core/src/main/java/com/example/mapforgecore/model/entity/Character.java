@@ -51,19 +51,28 @@ public class Character {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private Alignment alignment;
 
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "backstory")
+    private String backstory;
+
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<CampaignActor> campaignActors;
 
     public Character() {}
 
-    public Character(String name, Alignment alignment, Race race, Integer armor, Integer weaponDamage, Integer speed, User user) {
+    public Character(String name, Alignment alignment, Race race, Integer armor, Integer weaponDamage, Integer speed,
+                     String description, String backstory, User user) {
         this.name = name;
         this.alignment = alignment;
         this.race = race;
         this.armor = armor;
         this.speed = speed;
         this.weaponDamage = weaponDamage;
+        this.description = description;
+        this.backstory = backstory;
         this.creator = user;
     }
 }

@@ -13,6 +13,8 @@ public record CharacterSummaryDTO(
         Integer armor,
         Integer weaponDamage,
         Integer speed,
+        String description,
+        String backstory,
         Integer creatorId,
         String creatorUsername
         ) {
@@ -26,6 +28,8 @@ public record CharacterSummaryDTO(
                 character.getArmor(),
                 character.getWeaponDamage(),
                 character.getSpeed(),
+                character.getDescription(),
+                character.getBackstory(),
                 character.getCreator().getId(),
                 character.getCreator().getUsername()
         );
@@ -39,6 +43,8 @@ public record CharacterSummaryDTO(
                 characterDTO.armor,
                 characterDTO.weaponDamage,
                 characterDTO.speed,
+                characterDTO.description,
+                characterDTO.backstory,
                 new User(characterDTO.creatorId, characterDTO.creatorUsername)
         );
     }

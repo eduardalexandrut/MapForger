@@ -15,6 +15,7 @@ public record UserDetailDTO(
         String lastName,
         LocalDate dateOfBirth,
         String email,
+        Byte pic,
         Set<CharacterSummaryDTO> characters
       //  Set<CampaignSummaryDTO> campaigns
 ) {
@@ -28,6 +29,8 @@ public record UserDetailDTO(
                         ce.getArmor(),
                         ce.getWeaponDamage(),
                         ce.getSpeed(),
+                        ce.getDescription(),
+                        ce.getBackstory(),
                         user.getId(),
                         user.getUsername()
                 )).collect(Collectors.toSet());
@@ -39,6 +42,7 @@ public record UserDetailDTO(
                 user.getSurname(),
                 user.getDateOfBirth(),
                 user.getEmail(),
+                user.getPic(),
                 characters
         );
     }

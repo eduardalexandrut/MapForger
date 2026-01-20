@@ -5,9 +5,10 @@ import com.example.mapforgecore.service.UserService;
 
 public record UserSummaryDTO(
         Integer id,
-        String username
+        String username,
+        Byte pic
 ) {
     public static UserSummaryDTO fromEntity(User user) {
-        return new UserSummaryDTO(user.getId(), user.getUsername());
+        return new UserSummaryDTO(user.getId(), user.getUsername(), user.getPic());
     }
 }

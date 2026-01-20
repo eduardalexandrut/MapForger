@@ -36,6 +36,9 @@ public class User {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
+    @Column(name = "pic")
+    private Byte pic;
+
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private Set<Character> characters;
 

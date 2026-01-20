@@ -15,6 +15,8 @@ public record CharacterDetailDTO(
         Integer armor,
         Integer speed,
         Integer weaponDamage,
+        String  description,
+        String backstory,
         UserSummaryDTO user,
         Set<CampaignSummaryDTO> campaigns
 ) {
@@ -27,6 +29,8 @@ public record CharacterDetailDTO(
                 character.getArmor(),
                 character.getSpeed(),
                 character.getWeaponDamage(),
+                character.getDescription(),
+                character.getBackstory(),
                 UserSummaryDTO.fromEntity(character.getCreator()),
                 campaigns
         );
