@@ -16,6 +16,7 @@ public record UserDetailDTO(
         LocalDate dateOfBirth,
         String email,
         Byte pic,
+        LocalDate joinedDate,
         Set<CharacterSummaryDTO> characters
       //  Set<CampaignSummaryDTO> campaigns
 ) {
@@ -31,8 +32,7 @@ public record UserDetailDTO(
                         ce.getSpeed(),
                         ce.getDescription(),
                         ce.getBackstory(),
-                        user.getId(),
-                        user.getUsername()
+                        new UserSummaryDTO(user.getId(), user.getUsername(), user.getPic(), user.getJoinedDate())
                 )).collect(Collectors.toSet());
 
         return new UserDetailDTO(
@@ -43,6 +43,7 @@ public record UserDetailDTO(
                 user.getDateOfBirth(),
                 user.getEmail(),
                 user.getPic(),
+                user.getJoinedDate(),
                 characters
         );
     }

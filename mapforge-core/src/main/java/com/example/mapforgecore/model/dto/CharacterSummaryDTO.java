@@ -5,6 +5,8 @@ import com.example.mapforgecore.constants.Race;
 import com.example.mapforgecore.model.entity.Character;
 import com.example.mapforgecore.model.entity.User;
 
+import java.time.LocalDate;
+
 public record CharacterSummaryDTO(
         Integer id,
         String name,
@@ -15,8 +17,7 @@ public record CharacterSummaryDTO(
         Integer speed,
         String description,
         String backstory,
-        Integer creatorId,
-        String creatorUsername
+        UserSummaryDTO creatorSummary
         ) {
 
     public static  CharacterSummaryDTO fromEnity(Character character) {
@@ -30,8 +31,8 @@ public record CharacterSummaryDTO(
                 character.getSpeed(),
                 character.getDescription(),
                 character.getBackstory(),
-                character.getCreator().getId(),
-                character.getCreator().getUsername()
+                new UserSummaryDTO(character.getCreator().getId(), character.getCreator().getUsername(),
+                        character.getCreator().getPic(), character.getCreator().getJoinedDate())
         );
     }
 
@@ -45,7 +46,8 @@ public record CharacterSummaryDTO(
                 characterDTO.speed,
                 characterDTO.description,
                 characterDTO.backstory,
-                new User(characterDTO.creatorId, characterDTO.creatorUsername)
+                new User(characterDTO.creatorSummary.id(), characterDTO.creatorSummary.username(),
+                        characterDTO.creatorSummary.pic(), characterDTO.creatorSummary.joinedDate())
         );
     }
 }

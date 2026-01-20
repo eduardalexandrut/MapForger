@@ -39,6 +39,9 @@ public class User {
     @Column(name = "pic")
     private Byte pic;
 
+    @Column(name = "joined_date", nullable = false)
+    private LocalDate joinedDate;
+
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private Set<Character> characters;
 
@@ -50,8 +53,10 @@ public class User {
 
     }
 
-    public User(Integer creatorId, String creatorUsername) {
+    public User(Integer creatorId, String creatorUsername, Byte pic, LocalDate joinedDate) {
         this.id = creatorId;
         this.username = creatorUsername;
+        this.pic = pic;
+        this.joinedDate = joinedDate;
     }
 }
