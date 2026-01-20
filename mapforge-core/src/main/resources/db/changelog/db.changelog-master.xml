@@ -15,4 +15,5 @@
     <include file="20-01-2026-add-characters-and-user-pic.sql" relativeToChangelogFile="true"/>
     <include file="20-01-2026-add-campaign-pic.sql" relativeToChangelogFile="true"/>
     <include file="20-01-2026-add-joined-column-to-users.sql" relativeToChangelogFile="true"/>
+    <include file="20-01-2026-add-created-at-column.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
