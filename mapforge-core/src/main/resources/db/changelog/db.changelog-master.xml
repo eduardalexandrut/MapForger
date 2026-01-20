@@ -10,4 +10,8 @@
     <include file="31-08-2025-add-foreignkey-campaign_actor-to-campaign_member.sql" relativeToChangelogFile="true"/>
     <include file="07-09-2025-remove-ref-id-from-campaign-actors.sql" relativeToChangelogFile="true"/>
     <include file="07-09-2025-add-characters-and-npcs-fks-to-campaing-actors.sql" relativeToChangelogFile="true"/>
+    <include file="20-01-2026-add-characters-backstory.sql" relativeToChangelogFile="true"/>
+    <include file="20-01-2026-add-characters-description.sql" relativeToChangelogFile="true"/>
+    <include file="20-01-2026-add-characters-and-user-pic.sql" relativeToChangelogFile="true"/>
+    <include file="20-01-2026-add-campaign-pic.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

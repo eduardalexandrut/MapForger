@@ -88,7 +88,11 @@ configurations {
     liquibase {
         activities.register("main") {
             arguments = mapOf(
-                "changeLogFile" to "src/main/resources/db/changelog/db.changelog-master.xml",
+                // 1. The relative path from the searchPath
+                "changeLogFile" to "db/changelog/db.changelog-master.xml",
+
+                // 2. Add the searchPath to include your resources folder
+                "searchPath" to "${project.projectDir}/src/main/resources",
                 "url" to env("DB_URL"),
                 "username" to env("DB_USER"),
                 "password" to env("DB_PASSWORD"),
