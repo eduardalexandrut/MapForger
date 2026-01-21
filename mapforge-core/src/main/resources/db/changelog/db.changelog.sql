@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
 --changeset Eduard:1756237235394-1
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE users (
 );
 
 --changeset Eduard:1756237235394-2
-CREATE TABLE campaign_actors (
+CREATE TABLE IF NOT EXISTS campaign_actors (
     id SERIAL PRIMARY KEY,
     campaign INTEGER NOT NULL,
         xp INTEGER NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE campaign_actors (
 );
 
 --changeset Eduard:1756237235394-3
-CREATE TABLE campaign_members (
+CREATE TABLE IF NOT EXISTS campaign_members (
     owner INTEGER NOT NULL,
     campaign INTEGER NOT NULL,
     role VARCHAR(10) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TYPE public.race_enum AS ENUM
     ('DWARF', 'ELF', 'HALFLING', 'HUMAN', 'DRAGONBORN', 'GNOME', 'HALF_ELF', 'HALF_ORC', 'TIEFLING');
 
 --changeset Eduard:1756237235394-7
-CREATE TABLE characters (
+CREATE TABLE IF NOT EXISTS characters (
     id SERIAL PRIMARY KEY,
     creator INTEGER NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE characters (
 );
 
 --changeset Eduard:1756237235394-8
-CREATE TABLE npcs (
+CREATE TABLE IF NOT EXISTS npcs (
     id SERIAL PRIMARY KEY,
     armor INTEGER NOT NULL,
     speed INTEGER NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE npcs (
 );
 
 --changeset Eduard:1756237235394-9
-CREATE TABLE attack_actions (
+CREATE TABLE IF NOT EXISTS attack_actions (
     id SERIAL PRIMARY KEY,
     attacker INTEGER NOT NULL,
     attacked INTEGER NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE attack_actions (
 );
 
 --changeset Eduard:1756237235394-10
-CREATE TABLE campaigns (
+CREATE TABLE IF NOT EXISTS campaigns (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE campaigns (
 );
 
 --changeset Eduard:1756237235394-11
-CREATE TABLE maps (
+CREATE TABLE IF NOT EXISTS maps (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -90,7 +90,7 @@ CREATE TABLE maps (
 );
 
 --changeset Eduard:1756237235394-12
-CREATE TABLE movement_actions (
+CREATE TABLE IF NOT EXISTS movement_actions (
     id SERIAL PRIMARY KEY,
     actor INTEGER NOT NULL,
     turn_index INTEGER NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE movement_actions (
 );
 
 --changeset Eduard:1756237235394-13
-CREATE TABLE turns (
+CREATE TABLE IF NOT EXISTS turns (
     index INTEGER NOT NULL,
     actor INTEGER NOT NULL,
     campaign INTEGER NOT NULL,

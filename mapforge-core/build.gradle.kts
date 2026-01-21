@@ -94,8 +94,8 @@ configurations {
                 // 2. Add the searchPath to include your resources folder
                 "searchPath" to "${project.projectDir}/src/main/resources",
                 "url" to env("DB_URL"),
-                "username" to env("DB_USER"),
-                "password" to env("DB_PASSWORD"),
+                "username" to env("POSTGRES_USER"),
+                "password" to env("POSTGRES_PASSWORD"),
                 "driver" to "org.postgresql.Driver"
             )
         }
