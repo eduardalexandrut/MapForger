@@ -3,12 +3,14 @@ package com.example.mapforgecore.service;
 import com.example.mapforgecore.model.dto.CampaignSummaryDTO;
 import com.example.mapforgecore.model.dto.CharacterDetailDTO;
 import com.example.mapforgecore.model.dto.CharacterSummaryDTO;
+import com.example.mapforgecore.model.dto.UserSummaryDTO;
 import com.example.mapforgecore.model.entity.Campaign;
 import com.example.mapforgecore.model.entity.CampaignActor;
 import com.example.mapforgecore.model.entity.Character;
 import com.example.mapforgecore.model.entity.User;
 import com.example.mapforgecore.repository.CampaignActorRepository;
 import com.example.mapforgecore.repository.CharacterRepository;
+import com.example.mapforgecore.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 public class CharacterService {
     private final CharacterRepository characterRepository;
     private final CampaignActorRepository campaignActorRepository;
+    private final UserRepository userRepository;
 
-    public CharacterService(CharacterRepository characterRepository, CampaignActorRepository campaignActorRepository) {
+    public CharacterService(CharacterRepository characterRepository, CampaignActorRepository campaignActorRepository, UserRepository userRepository) {
         this.characterRepository = characterRepository;
         this.campaignActorRepository = campaignActorRepository;
+        this.userRepository = userRepository;
     }
 
     public Set<CharacterSummaryDTO> getAllCharacters() {
@@ -83,8 +87,14 @@ public class CharacterService {
                 .collect(Collectors.toSet());
     }
 
+    /** By default, we expect only to have the user id. We fill all the other uset fields by querying the db*/
     public Optional<CharacterSummaryDTO> createCharacter(CharacterSummaryDTO characterSummaryDTO) {
         Character character = CharacterSummaryDTO.fromDTO(characterSummaryDTO);
-        return Optional.of(CharacterSummaryDTO.fromEnity(characterRepository.save(character)));
+        Optional<User> user = userRepository.findById(character.getCreator().getId());
+        if (user.isPresent()) {
+            character.setCreator(user.get());
+            return Optional.of(CharacterSummaryDTO.fromEnity(characterRepository.save(character)));
+        }
+        return Optional.empty();
     }
 }

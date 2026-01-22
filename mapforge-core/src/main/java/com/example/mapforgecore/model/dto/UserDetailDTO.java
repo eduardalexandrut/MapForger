@@ -32,6 +32,8 @@ public record UserDetailDTO(
                         ce.getSpeed(),
                         ce.getDescription(),
                         ce.getBackstory(),
+                        ce.getPic(),
+                        ce.getCreatedAt(),
                         new UserSummaryDTO(user.getId(), user.getUsername(), user.getPic(), user.getJoinedDate())
                 )).collect(Collectors.toSet());
 

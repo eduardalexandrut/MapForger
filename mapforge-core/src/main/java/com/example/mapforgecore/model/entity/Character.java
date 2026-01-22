@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 
@@ -57,6 +59,12 @@ public class Character {
     @Column(name = "backstory")
     private String backstory;
 
+    @Column(name = "pic")
+    private String pic;
+
+    @Column(name = "createdAt", insertable = false, updatable = false)
+    private LocalDate createdAt;
+
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<CampaignActor> campaignActors;
@@ -64,7 +72,7 @@ public class Character {
     public Character() {}
 
     public Character(String name, Alignment alignment, Race race, Integer armor, Integer weaponDamage, Integer speed,
-                     String description, String backstory, User user) {
+                     String description, String backstory, String pic, LocalDate createdAt, User user) {
         this.name = name;
         this.alignment = alignment;
         this.race = race;
@@ -73,6 +81,8 @@ public class Character {
         this.weaponDamage = weaponDamage;
         this.description = description;
         this.backstory = backstory;
+        this.pic = pic;
+        this.createdAt = createdAt;
         this.creator = user;
     }
 }

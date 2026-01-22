@@ -7,6 +7,7 @@ import com.example.mapforgecore.model.entity.User;
 
 import java.time.LocalDate;
 
+
 public record CharacterSummaryDTO(
         Integer id,
         String name,
@@ -17,6 +18,8 @@ public record CharacterSummaryDTO(
         Integer speed,
         String description,
         String backstory,
+        String pic,
+        LocalDate createdAt,
         UserSummaryDTO creatorSummary
         ) {
 
@@ -31,6 +34,8 @@ public record CharacterSummaryDTO(
                 character.getSpeed(),
                 character.getDescription(),
                 character.getBackstory(),
+                character.getPic(),
+                character.getCreatedAt(),
                 new UserSummaryDTO(character.getCreator().getId(), character.getCreator().getUsername(),
                         character.getCreator().getPic(), character.getCreator().getJoinedDate())
         );
@@ -46,8 +51,9 @@ public record CharacterSummaryDTO(
                 characterDTO.speed,
                 characterDTO.description,
                 characterDTO.backstory,
-                new User(characterDTO.creatorSummary.id(), characterDTO.creatorSummary.username(),
-                        characterDTO.creatorSummary.pic(), characterDTO.creatorSummary.joinedDate())
+                characterDTO.pic,
+                characterDTO.createdAt,
+                new User(characterDTO.creatorSummary.id())
         );
     }
 }

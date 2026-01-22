@@ -5,6 +5,7 @@ import com.example.mapforgecore.constants.Race;
 import com.example.mapforgecore.model.entity.Character;
 import com.example.mapforgecore.model.entity.User;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public record CharacterDetailDTO(
@@ -17,6 +18,8 @@ public record CharacterDetailDTO(
         Integer weaponDamage,
         String  description,
         String backstory,
+        String pic,
+        LocalDate createdAt,
         UserSummaryDTO user,
         Set<CampaignSummaryDTO> campaigns
 ) {
@@ -31,6 +34,8 @@ public record CharacterDetailDTO(
                 character.getWeaponDamage(),
                 character.getDescription(),
                 character.getBackstory(),
+                character.getPic(),
+                character.getCreatedAt(),
                 UserSummaryDTO.fromEntity(character.getCreator()),
                 campaigns
         );
