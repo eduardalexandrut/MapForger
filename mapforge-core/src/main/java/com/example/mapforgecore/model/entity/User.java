@@ -36,10 +36,11 @@ public class User {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "pic")
-    private Byte pic;
+    //@Lob
+    @Column(name = "pic"/*, columnDefinition = "bytea"*/)
+    private String  pic;
 
-    @Column(name = "joined_date")
+    @Column(name = "joined_date", insertable = false, updatable = false)
     private LocalDate joinedDate;
 
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
@@ -53,14 +54,14 @@ public class User {
 
     }
 
-    public User(Integer creatorId, String creatorUsername, Byte pic, LocalDate joinedDate) {
+    public User(Integer creatorId, String creatorUsername, String  pic, LocalDate joinedDate) {
         this.id = creatorId;
         this.username = creatorUsername;
         this.pic = pic;
         this.joinedDate = joinedDate;
     }
 
-    public User(Integer creatorId, String creatorUsername, Byte pic) {
+    public User(Integer creatorId, String creatorUsername, String  pic) {
         this.id = creatorId;
         this.username = creatorUsername;
         this.pic = pic;

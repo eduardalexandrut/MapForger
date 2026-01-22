@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public record UserSummaryDTO(
         Integer id,
         String username,
-        Byte pic,
+        String  pic,
         LocalDate joinedDate
 ) {
     public static UserSummaryDTO fromEntity(User user) {

@@ -26,7 +26,6 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    //TODO password checks (length, strength, etc...)
     public AuthResponseDTO signUp(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return new AuthResponseDTO(false, "User already exists");

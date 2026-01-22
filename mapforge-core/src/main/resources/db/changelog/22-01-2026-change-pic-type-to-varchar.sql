@@ -1,0 +1,7 @@
+--liquibase sql
+
+--changeset Eduard:16
+
+ALTER TABLE users ALTER COLUMN pic TYPE VARCHAR(250);
+ALTER TABLE characters ALTER COLUMN pic TYPE VARCHAR(250);
+ALTER TABLE campaigns ALTER COLUMN pic TYPE VARCHAR(250);

@@ -27,7 +27,7 @@ public class AuthenticationController  {
             return ResponseEntity.badRequest().body(res.getMessage());
         }
         return ResponseEntity.ok(Map.of(
-                "token",res.getToken(),
+                "token", res.getToken(),
                 "userId", res.getUserId()
         ));
     }
@@ -40,7 +40,10 @@ public class AuthenticationController  {
         if (!res.isSuccess()) {
             return ResponseEntity.badRequest().body(res.getMessage());
         }
-        return ResponseEntity.ok(res.getUserId());
+        return ResponseEntity.ok(Map.of(
+                "token", res.getToken(),
+                "userId", res.getUserId()
+        ));
     }
 
     //GET /api/v1/auth/signout

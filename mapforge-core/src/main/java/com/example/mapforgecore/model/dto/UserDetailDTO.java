@@ -15,7 +15,7 @@ public record UserDetailDTO(
         String lastName,
         LocalDate dateOfBirth,
         String email,
-        Byte pic,
+        String  pic,
         LocalDate joinedDate,
         Set<CharacterSummaryDTO> characters
       //  Set<CampaignSummaryDTO> campaigns
