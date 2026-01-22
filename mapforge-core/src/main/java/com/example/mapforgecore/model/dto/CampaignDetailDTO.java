@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public record CampaignDetailDTO(UUID id, String name, String description,
+public record CampaignDetailDTO(UUID id,
+                                String name, String description,
                                 String pic,
                                 LocalDate createdAt,
                                 Map map,

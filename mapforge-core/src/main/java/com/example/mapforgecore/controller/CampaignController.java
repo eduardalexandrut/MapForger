@@ -1,16 +1,21 @@
 package com.example.mapforgecore.controller;
 
 import com.example.mapforgecore.model.dto.CampaignDetailDTO;
+import com.example.mapforgecore.model.dto.CampaignFormDTO;
 import com.example.mapforgecore.model.dto.CampaignMemberDetailDTO;
 import com.example.mapforgecore.model.dto.CampaignSummaryDTO;
 import com.example.mapforgecore.model.entity.Campaign;
 import com.example.mapforgecore.model.entity.CampaignMember;
+import com.example.mapforgecore.model.entity.User;
 import com.example.mapforgecore.repository.CampaignRepository;
+import com.example.mapforgecore.repository.UserRepository;
 import com.example.mapforgecore.service.CampaignService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,16 +27,14 @@ public class CampaignController {
 
     private final CampaignService campaignService;
 
-    public CampaignController(CampaignRepository campaignRepository, CampaignService campaignService) {
+    public CampaignController(CampaignRepository campaignRepository, CampaignService campaignService, UserRepository userRepository) {
         this.campaignRepository = campaignRepository;
         this.campaignService = campaignService;
     }
 
     @PostMapping
-    public ResponseEntity<Campaign> createCampaign(@RequestBody Campaign campaign) {
-        return campaignService.createCampaign(campaign)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<CampaignSummaryDTO> createCampaign(@RequestBody CampaignFormDTO campaignFormDTO) {
+        return ResponseEntity.ok(campaignService.createCampaign(campaignFormDTO));
     }
 
     // GET /api/campaigns → all campaigns
@@ -57,9 +60,7 @@ public class CampaignController {
     // PUT /api/v1/campaigns/{id} -> update a campaign
     @PutMapping("/{id}")
     public ResponseEntity<CampaignDetailDTO> updateCampaign(@PathVariable String id, @RequestBody CampaignDetailDTO campaign) {
-        return campaignService.updateCampaign(id, campaign)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(campaignService.updateCampaign(id, campaign));
     }
 
     // DELETE /api/v1/campaigns/{id} -> delete a campaign

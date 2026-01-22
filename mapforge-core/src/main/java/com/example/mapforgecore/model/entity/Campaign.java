@@ -16,8 +16,13 @@ import java.util.UUID;
 @Table(name = "campaigns")
 public class Campaign {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
     private UUID id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -36,7 +41,18 @@ public class Campaign {
     @Column(name = "pic")
     private String pic;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDate createdAt;
 
+    public Campaign(String name, String description, User creator, Map map, String pic) {
+        this.name = name;
+        this.description = description;
+        this.creator = creator;
+        this.map = map;
+        this.pic = pic;
+    }
+
+    public Campaign() {
+
+    }
 }
