@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,5 +33,10 @@ public class Campaign {
     private Set<CampaignMember> campaignMembers;
 
    // private Set<CampaignActor> campaignActors;
+    @Column(name = "pic")
+    private String pic;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
 }
