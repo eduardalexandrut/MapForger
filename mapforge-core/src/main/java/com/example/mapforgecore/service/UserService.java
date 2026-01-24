@@ -1,16 +1,18 @@
 package com.example.mapforgecore.service;
 
-import com.example.mapforgecore.model.dto.AuthResponseDTO;
-import com.example.mapforgecore.model.dto.UserDetailDTO;
-import com.example.mapforgecore.model.dto.UserSummaryDTO;
+import com.example.mapforgecore.model.dto.*;
+import com.example.mapforgecore.model.entity.Campaign;
+import com.example.mapforgecore.model.entity.Character;
 import com.example.mapforgecore.model.entity.User;
 import com.example.mapforgecore.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -18,12 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private CharacterService characterService;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       JwtService jwtService) {
+                       JwtService jwtService, CharacterService characterService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.characterService = characterService;
     }
 
     public AuthResponseDTO signUp(User user) {
@@ -56,7 +60,19 @@ public class UserService {
     }
 
     public UserDetailDTO getUserById(Integer id) {
-        return userRepository.findById(id).map(UserDetailDTO::fromEntity).orElse(null);
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Set<CharacterSummaryDTO> characters = user.getCharacters().stream().map(CharacterSummaryDTO::fromEnity).collect(Collectors.toSet());
+
+        //Get all campaigns linked to the user
+        Set<CampaignSummaryDTO> campaignsCreated = user.getCampaigns().stream().map(CampaignSummaryDTO::fromEntity).collect(Collectors.toSet());
+        Set<CampaignSummaryDTO> campaignsJoined = user.getCharacters().stream()
+                .flatMap(c -> characterService.getCampaignsForCharacter(c.getId()).stream())
+                .collect(Collectors.toSet());
+        Set<CampaignSummaryDTO> allCampaigns = Stream.concat(campaignsCreated.stream(), campaignsJoined.stream()).collect(Collectors.toSet());
+
+        UserDetailDTO userDetailDTO = UserDetailDTO.fromEntity(user, characters, allCampaigns);
+
+        return userDetailDTO;
     }
 
     public Optional<User> updateUser(Integer id, User updatedUser) {

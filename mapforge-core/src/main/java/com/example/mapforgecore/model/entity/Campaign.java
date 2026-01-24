@@ -37,7 +37,6 @@ public class Campaign {
     @OneToMany(mappedBy = "campaign", fetch = FetchType.EAGER)
     private Set<CampaignMember> campaignMembers;
 
-   // private Set<CampaignActor> campaignActors;
     @Column(name = "pic")
     private String pic;
 

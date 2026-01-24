@@ -1,5 +1,6 @@
 package com.example.mapforgecore.model.entity;
 
+import com.example.mapforgecore.model.dto.CampaignSummaryDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +46,9 @@ public class User {
 
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private Set<Character> characters;
+
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
+    private Set<Campaign> campaigns;
 
     public User(Integer id) {
         this.id = id;
