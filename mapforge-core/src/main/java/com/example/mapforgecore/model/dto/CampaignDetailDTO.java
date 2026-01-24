@@ -28,9 +28,7 @@ public record CampaignDetailDTO(UUID id,
                 campaign.getPic(),
                 campaign.getCreatedAt(),
                 campaign.getMap(),
-                campaign.getCampaignMembers().stream().filter(m -> Objects.equals(m.getRole(), "Master"))
-                        .map(m -> m.getCampaignActors().stream().findFirst().get().getCharacter().getCreator())
-                        .map(UserSummaryDTO::fromEntity).findAny().orElse(null),
+                UserSummaryDTO.fromEntity(campaign.getCreator()),
                 campaign.getCampaignMembers().stream().flatMap(campaignMember -> campaignMember.getCampaignActors().stream())
                         .map(CampaignActor::getCharacter).map(CharacterSummaryDTO::fromEnity).toList(),
                 campaign.getCampaignMembers().stream()
