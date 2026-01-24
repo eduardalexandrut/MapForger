@@ -6,6 +6,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,5 +31,11 @@ public class Map {
     
     @Column(name = "height", nullable = false)
     private Integer height;
+
+    @Column(name = "pic")
+    private String pic;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private LocalDate createdAt;
 
 }

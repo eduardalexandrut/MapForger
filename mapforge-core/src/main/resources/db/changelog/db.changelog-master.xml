@@ -18,4 +18,6 @@
     <include file="20-01-2026-add-created-at-column.sql" relativeToChangelogFile="true"/>
     <include file="22-01-2026-change-pic-type-to-varchar.sql" relativeToChangelogFile="true"/>
     <include file="22-01-2026-add-fk-campaigns-users.sql" relativeToChangelogFile="true"/>
+    <include file="24-01-2026-add-column-pic-in-maps.sql" relativeToChangelogFile="true"/>
+    <include file="24-01-2026-insert-default-maps.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

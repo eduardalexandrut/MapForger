@@ -1,13 +1,12 @@
 package com.example.mapforgecore.service;
 
-import com.example.mapforgecore.model.dto.AuthResponseDTO;
 import com.example.mapforgecore.model.dto.CampaignDetailDTO;
 import com.example.mapforgecore.model.dto.CampaignFormDTO;
 import com.example.mapforgecore.model.dto.CampaignSummaryDTO;
 import com.example.mapforgecore.model.entity.Campaign;
-import com.example.mapforgecore.model.entity.Character;
 import com.example.mapforgecore.model.entity.Map;
 import com.example.mapforgecore.model.entity.User;
+import com.example.mapforgecore.repository.CampaignMemberRepository;
 import com.example.mapforgecore.repository.CampaignRepository;
 import com.example.mapforgecore.repository.MapRepository;
 import com.example.mapforgecore.repository.UserRepository;
