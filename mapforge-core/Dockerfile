@@ -5,6 +5,6 @@ WORKDIR /app
 
 COPY build/libs/mapforge-core-0.0.1-SNAPSHOT.jar app.jar
 COPY .env .env
-EXPOSE 8082
+EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

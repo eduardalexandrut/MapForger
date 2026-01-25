@@ -49,6 +49,20 @@ services:
     networks:
       - microservices-net
 
+  mapforge-gameplay:
+    build:
+      context: ./mapforge-gameplay
+    container_name: mapforge-gameplay
+    depends_on:
+      mapforge-eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-net
+
   mapforge-gateway:
     build:
       context: ./mapforge-gateway
