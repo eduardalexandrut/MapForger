@@ -6,31 +6,47 @@ spring:
     name: mapforge-gateway
 
   cloud:
-    gateway:     # Strips the first segment (optional, depends on your route design)
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
-          default-filters:
-            - StripPrefix=1
-          globalcors:
-            cors-configurations:
-              '[/**]':
-                allowedOrigins: "http://localhost:4200"
-                allowedMethods:
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - OPTIONS
-                allowedHeaders: "*"
-                allowCredentials: true
-                maxAge: 3600
+    gateway:
+      # 1. ROUTING SECTION
+      routes:
+        # WebSocket Route (Must come before the generic REST route)
+        - id: gameplay-websocket
+          uri: lb:ws://mapforge-gameplay  # 'lb' = Load Balance, 'ws' = WebSocket protocol
+          predicates:
+            - Path=/mapforge-gameplay/gameplay-ws/**
+          # We do NOT use StripPrefix here because your backend expects the full path
+          # including '/mapforge-gameplay' (due to server.servlet.context-path).
+
+        # Standard REST/HTTP Route
+        - id: gameplay-rest
+          uri: lb://mapforge-gameplay     # Standard HTTP load balancing
+          predicates:
+            - Path=/mapforge-gameplay/**
+
+      # 2. DISCOVERY SECTION
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      # 3. SECURITY & CORS SECTION
+      globalcors:
+        # Removed 'add-to-simple-url-handler-mapping' (the cause of deprecation warnings)
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"   # Allows 'null' origin (local files) and localhost
+            allowedMethods:              # Explicit methods are safer than "*"
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
 eureka:
   client:
-    register-with-eureka: true   # Gateway itself registers in Eureka
-    fetch-registry: true         # Fetch other services' registry
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: http://mapforge-eureka:8761/eureka/
