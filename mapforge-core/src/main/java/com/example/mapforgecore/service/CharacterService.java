@@ -97,4 +97,9 @@ public class CharacterService {
         }
         return Optional.empty();
     }
+
+    public Set<CharacterSummaryDTO> getAllCharactersByCreatorId(Integer userId) {
+        return characterRepository.findAllByCreatorId(userId).stream()
+                .map(CharacterSummaryDTO::fromEnity).collect(Collectors.toSet());
+    }
 }
