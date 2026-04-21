@@ -55,6 +55,7 @@ dependencies {
     liquibaseRuntime(files(sourceSets["main"].output))
     liquibaseRuntime(files(sourceSets["main"].compileClasspath))
     liquibaseRuntime(files(sourceSets["main"].runtimeClasspath))
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     //Dotenv
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
