@@ -1,5 +1,7 @@
 server:
   port: 8082
+  servlet:
+    context-path: /mapforge-core
 
 spring:
   application:
@@ -25,6 +27,6 @@ spring:
 eureka:
   client:
     register-with-eureka: true   # Registers this service with Eureka
-    fetch-registry: false        # Core itself doesn’t need to fetch other services
+    fetch-registry: true
     service-url:
       defaultZone: http://mapforge-eureka:8761/eureka/

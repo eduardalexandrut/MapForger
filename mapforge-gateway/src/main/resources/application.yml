@@ -7,35 +7,35 @@ spring:
 
   cloud:
     gateway:
-      # 1. ROUTING SECTION
       routes:
-        # WebSocket Route (Must come before the generic REST route)
+        # WebSocket Route (must come before REST route)
         - id: gameplay-websocket
-          uri: lb:ws://mapforge-gameplay  # 'lb' = Load Balance, 'ws' = WebSocket protocol
+          uri: lb:ws://mapforge-gameplay
           predicates:
             - Path=/mapforge-gameplay/gameplay-ws/**
-          # We do NOT use StripPrefix here because your backend expects the full path
-          # including '/mapforge-gameplay' (due to server.servlet.context-path).
 
-        # Standard REST/HTTP Route
+        # Gameplay REST Route
         - id: gameplay-rest
-          uri: lb://mapforge-gameplay     # Standard HTTP load balancing
+          uri: lb://mapforge-gameplay
           predicates:
             - Path=/mapforge-gameplay/**
 
-      # 2. DISCOVERY SECTION
+        # Core REST Route
+        - id: core-rest
+          uri: lb://mapforge-core
+          predicates:
+            - Path=/mapforge-core/**
+
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
 
-      # 3. SECURITY & CORS SECTION
       globalcors:
-        # Removed 'add-to-simple-url-handler-mapping' (the cause of deprecation warnings)
         cors-configurations:
           '[/**]':
-            allowedOriginPatterns: "*"   # Allows 'null' origin (local files) and localhost
-            allowedMethods:              # Explicit methods are safer than "*"
+            allowedOriginPatterns: "*"
+            allowedMethods:
               - GET
               - POST
               - PUT

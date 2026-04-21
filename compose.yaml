@@ -36,6 +36,10 @@ services:
       - microservices-net
 
   mapforge-core:
+    environment:
+      - DOCKER_DB_URL=jdbc:postgresql://postgres:5432/MapForge
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     build:
       context: ./mapforge-core
     container_name: mapforge-core
@@ -50,6 +54,10 @@ services:
       - microservices-net
 
   mapforge-gameplay:
+    environment:
+      - DOCKER_DB_URL=jdbc:postgresql://postgres:5432/MapForgeGameplay
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     build:
       context: ./mapforge-gameplay
     container_name: mapforge-gameplay

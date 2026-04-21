@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface CampaignActorRepository extends JpaRepository<CampaignActor, Integer> {
@@ -18,4 +19,14 @@ public interface CampaignActorRepository extends JpaRepository<CampaignActor, In
          WHERE ca.character.id = :characterId
     """)
     List<Campaign> findCampaignsByCharacterId(@Param("characterId") Integer characterId);
+
+    @Query("""
+    SELECT ca FROM CampaignActor ca
+    JOIN FETCH ca.campaignMember cm
+    JOIN FETCH cm.campaign c
+    JOIN FETCH cm.owner
+    LEFT JOIN FETCH ca.character
+    WHERE c.id = :campaignId
+    """)
+    List<CampaignActor> findByCampaignId(@Param("campaignId") UUID campaignId);
 }

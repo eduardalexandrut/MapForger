@@ -1,5 +1,7 @@
 server:
   port: 8081
+  servlet:
+    context-path: /mapforge-gameplay
 
 spring:
   application:
@@ -25,6 +27,6 @@ spring:
 eureka:
   client:
     register-with-eureka: true
-    fetch-registry: false
+    fetch-registry: true
     service-url:
       defaultZone: http://mapforge-eureka:8761/eureka/
