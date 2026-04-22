@@ -7,7 +7,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.cloud.openfeign.enabled=false",
+       // "spring.autoconfigure.exclude=org.springframework.cloud.openfeign.FeignAutoConfiguration"
+})
 @Testcontainers
 public abstract class BaseGameplayIntegrationTest {
 
@@ -28,5 +31,6 @@ public abstract class BaseGameplayIntegrationTest {
 
         registry.add("eureka.client.enabled", () -> "false");
         registry.add("spring.cloud.discovery.enabled", () -> "false");
+        registry.add("spring.cloud.openfeign.enabled", () -> "false");
     }
 }

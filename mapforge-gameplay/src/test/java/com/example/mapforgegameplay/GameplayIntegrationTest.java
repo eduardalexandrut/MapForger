@@ -5,20 +5,26 @@ import com.example.mapforgegameplay.mock.MockMessagingConfig;
 import com.example.mapforgegameplay.model.dto.ActionPayloadDTO;
 import com.example.mapforgegameplay.model.entity.*;
 import com.example.mapforgegameplay.repository.*;
+import com.example.mapforgegameplay.service.CoreClient;
 import com.example.mapforgegameplay.service.GameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
-@Import({MockCoreClientConfig.class, MockMessagingConfig.class})
+@Import({/*MockCoreClientConfig.class,*/ MockMessagingConfig.class})
 class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
+    @MockitoBean
+    private CoreClient coreClient;
 
     @Autowired private GameService gameService;
     @Autowired private GameSessionRepository gameSessionRepository;
@@ -37,6 +43,16 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // Instead of a separate class, define your "Predefined Map" here
+        Map mockMap = new Map(1, "Arena", "Desc", 20, 20, "pic.png", null);
+
+        // This is the missing link that was causing your NPE earlier
+        Mockito.when(coreClient.getMapByCampaignId(any(UUID.class)))
+                .thenReturn(mockMap);
+
+        // If you need actors too:
+        Mockito.when(coreClient.getActorsForCampaign(any(UUID.class)))
+                .thenReturn(List.of(/* your actor bootstrap DTOs */));
         testDataHelper.clearAll();
         campaignId = UUID.randomUUID();
         // Manually insert the "Predefined Data"

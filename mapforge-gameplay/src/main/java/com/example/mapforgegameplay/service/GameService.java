@@ -24,6 +24,7 @@ public class GameService {
     private final DeathActionRepository deathActionRepository;
     private final CampaignActorRepository campaignActorRepository;
     private final SimpMessageSendingOperations messagingTemplate;
+    private final CoreClient coreClient;
 
     // ---------------------------------------------------------------
     // START GAME
@@ -74,7 +75,7 @@ public class GameService {
     public void handleAction(UUID campaignId, ActionPayloadDTO payload) {
         GameSession session = getActiveSession(campaignId);
         Turn currentTurn = getCurrentTurn(session);
-
+        Map currentMap = getCurrentMap(campaignId);
 
         // Validate it's this actor's turn
         if (!currentTurn.getActorId().equals(payload.getActorId())) {
@@ -83,7 +84,7 @@ public class GameService {
 
         TurnResultDTO result = switch (payload.getType()) {
             case "MOVE" -> {
-                if (payload.getX() >= 0 && payload.getX() <= 20 && payload.getY() >= 0 && payload.getY() <= 20) {
+                if (isMovementValid(payload, currentMap)) {
                     yield handleMove(payload, currentTurn, campaignId);
                 } else {
                     throw new IllegalArgumentException("out of bounds");
@@ -95,6 +96,15 @@ public class GameService {
 
         // Broadcast action result
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".action", result);
+    }
+
+    private boolean isMovementValid(ActionPayloadDTO payload, Map currentMap) {
+        return payload.getX() >= 0 && payload.getX() <= currentMap.getWidth()
+                && payload.getY() >= 0 && payload.getY() <= currentMap.getHeight();
+    }
+
+    private Map getCurrentMap(UUID campaignId) {
+        return coreClient.getMapByCampaignId(campaignId);
     }
 
     // ---------------------------------------------------------------

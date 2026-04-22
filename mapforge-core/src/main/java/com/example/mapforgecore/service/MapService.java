@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class MapService {
@@ -17,5 +18,13 @@ public class MapService {
 
     public Set<Map> getAllMaps() {
         return new HashSet<>(mapRepository.findAll());
+    }
+
+    public Map getMapById(Integer id) {
+        return mapRepository.getReferenceById(id);
+    }
+
+    public Map getMapByCampaignId(UUID campaignId) {
+        return mapRepository.getMapByCampaignId(campaignId);
     }
 }
