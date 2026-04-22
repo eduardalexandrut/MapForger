@@ -29,7 +29,7 @@ public class GameService {
     // START GAME
     // ---------------------------------------------------------------
 
-    @Transactional("gameplayTransactionManager")
+    @Transactional
     public GameStateDTO startGame(UUID campaignId) {
         if (gameSessionRepository.existsById(campaignId)) {
             throw new IllegalStateException("Game already started for campaign " + campaignId);
@@ -37,7 +37,7 @@ public class GameService {
 
         // 1. Fetch actors from MapForge
         List<CampaignActor> actors = campaignActorRepository
-                .findByCampaignMemberIdCampaignId(campaignId);
+                .findByCampaignId(campaignId);
 
         if (actors.isEmpty()) {
             throw new IllegalStateException("No actors found for campaign " + campaignId);
@@ -70,10 +70,11 @@ public class GameService {
     // HANDLE ACTION
     // ---------------------------------------------------------------
 
-    @Transactional("gameplayTransactionManager")
+    @Transactional
     public void handleAction(UUID campaignId, ActionPayloadDTO payload) {
         GameSession session = getActiveSession(campaignId);
         Turn currentTurn = getCurrentTurn(session);
+
 
         // Validate it's this actor's turn
         if (!currentTurn.getActorId().equals(payload.getActorId())) {
@@ -81,7 +82,13 @@ public class GameService {
         }
 
         TurnResultDTO result = switch (payload.getType()) {
-            case "MOVE" -> handleMove(payload, currentTurn, campaignId);
+            case "MOVE" -> {
+                if (payload.getX() >= 0 && payload.getX() <= 20 && payload.getY() >= 0 && payload.getY() <= 20) {
+                    yield handleMove(payload, currentTurn, campaignId);
+                } else {
+                    throw new IllegalArgumentException("out of bounds");
+                }
+            }
             case "ATTACK" -> handleAttack(payload, currentTurn, campaignId);
             default -> throw new IllegalArgumentException("Unknown action type: " + payload.getType());
         };
@@ -94,7 +101,7 @@ public class GameService {
     // END TURN
     // ---------------------------------------------------------------
 
-    @Transactional("gameplayTransactionManager")
+    @Transactional
     public GameStateDTO endTurn(UUID campaignId, Integer actorId) {
         GameSession session = getActiveSession(campaignId);
         Turn currentTurn = getCurrentTurn(session);
@@ -129,7 +136,7 @@ public class GameService {
     // FINISH GAME
     // ---------------------------------------------------------------
 
-    @Transactional("gameplayTransactionManager")
+    @Transactional
     public void finishGame(UUID campaignId) {
         GameSession session = getActiveSession(campaignId);
         session.finish();

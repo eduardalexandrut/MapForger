@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface TurnRepository extends JpaRepository<Turn, TurnPK> {
     List<Turn> findByIdCampaignIdOrderByIdIndexAsc(UUID campaignId);
-    List<MovementAction> findByCampaignIdAndTurnIndex(UUID campaignId, Integer turnIndex);
+//    List<MovementAction> findByCampaignIdAndTurnIndex(UUID campaignId, Integer turnIndex);
 
 }

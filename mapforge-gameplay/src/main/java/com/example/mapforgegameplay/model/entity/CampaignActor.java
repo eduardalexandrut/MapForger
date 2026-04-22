@@ -1,7 +1,9 @@
 package com.example.mapforgegameplay.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -9,7 +11,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+//@AllArgsConstructor
 @Table(name = "campaign_actors")
+@NoArgsConstructor
 public class CampaignActor {
 
     @Id
@@ -34,6 +38,14 @@ public class CampaignActor {
     @Column(name = "campaign_id", nullable = false)
     private UUID campaignId;        // plain ref to Core's campaigns table
 
-    @Column(name = "weapon_damage")
-    private Integer weaponDamage;
+    public CampaignActor(Integer id, String type, Integer hp, Integer xp, Integer weaponDamage, Integer ownerId, UUID campaignId) {
+        this.id = id;
+        this.type = type;
+        this.hp = hp;
+        this.xp = xp;
+        this.weaponDamage = weaponDamage;
+        this.ownerId = ownerId;
+        this.campaignId = campaignId;
+    }
+
 }

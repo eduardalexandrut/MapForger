@@ -25,7 +25,7 @@ public class HistoryService {
     private final AttackActionRepository attackActionRepository;
     private final DeathActionRepository deathActionRepository;
 
-    @Transactional(transactionManager = "gameplayTransactionManager", readOnly = true)
+//    @Transactional(transactionManager = "gameplayTransactionManager", readOnly = true)
     public CampaignHistoryDTO getHistory(UUID campaignId) {
         GameSession session = gameSessionRepository.findById(campaignId)
                 .orElseThrow(() -> new IllegalArgumentException("No game session found for campaign " + campaignId));

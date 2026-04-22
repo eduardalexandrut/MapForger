@@ -25,6 +25,9 @@ public class CampaignActor {
     @Column(name = "hp", nullable = false)
     private Integer hp;
 
+    @Column(name = "weapon_damage", nullable = false)
+    private Integer weaponDamage;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns({
             @JoinColumn(name = "owner", referencedColumnName = "owner"),

@@ -1,6 +1,6 @@
 package com.example.mapforgegameplay.model.dto;
 
-import com.example.mapforgecore.model.entity.CampaignActor;
+import com.example.mapforgegameplay.model.entity.CampaignActor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -24,9 +24,9 @@ public class CampaignActorBootstrapDTO {
                 actor.getHp(),
                 actor.getXp(),
                 // weaponDamage comes from the character
-                actor.getCharacter() != null ? actor.getCharacter().getWeaponDamage() : null,
-                actor.getCampaignMember().getOwner().getId(),
-                actor.getCampaignMember().getCampaign().getId()
+                actor.getWeaponDamage(),
+                actor.getOwnerId(),
+                actor.getCampaignId()
         );
     }
 }
