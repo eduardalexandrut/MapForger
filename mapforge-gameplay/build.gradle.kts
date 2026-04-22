@@ -47,7 +47,7 @@ dependencies {
     implementation("org.hibernate:hibernate-core:6.3.0.Final")
 
     //Liquibase
-    //    implementation("org.liquibase:liquibase-core")
+    implementation("org.liquibase:liquibase-core")
     // Dependencies required for running liquibase for tests
     liquibaseRuntime("org.liquibase:liquibase-core:4.23.0")
     liquibaseRuntime("info.picocli:picocli:4.7.4")
@@ -64,44 +64,34 @@ dependencies {
 }
 
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-
-    //Load values from .env
-    val envFile = file(".env")
-    if (envFile.exists()) {
-        envFile.forEachLine { line ->
-            val parts = line.split("=", limit = 2)
-            if (parts.size == 2) {
-                val key = parts[0].trim()
-                val value = parts[1].trim()
-                if (System.getenv(key) == null) {
-                    System.setProperty(key, value)
-                }
+// Load values from .env — outside configurations block
+val envFile = file(".env")
+if (envFile.exists()) {
+    envFile.forEachLine { line ->
+        val parts = line.split("=", limit = 2)
+        if (parts.size == 2) {
+            val key = parts[0].trim()
+            val value = parts[1].trim()
+            if (System.getenv(key) == null) {
+                System.setProperty(key, value)
             }
         }
     }
-
-    fun env(key: String): String =
-        System.getenv(key) ?: System.getProperty(key) ?: error("Missing env var: $key")
-
-    liquibase {
-        activities.register("main") {
-            arguments = mapOf(
-                "changeLogFile" to "src/main/resources/db/changelog/db.changelog-master.xml",
-                "url" to env("DB_URL"),
-                "username" to env("DB_USER"),
-                "password" to env("DB_PASSWORD"),
-                "driver" to "org.postgresql.Driver"
-            )
-        }
-        runList = "main"
-
-    }
 }
 
-val props = Properties().apply {
-    load(file("src/main/resources/application.yaml").inputStream())
+fun env(key: String): String =
+    System.getenv(key) ?: System.getProperty(key) ?: error("Missing env var: $key")
+
+liquibase {
+    activities.register("main") {
+        arguments = mapOf(
+            "changeLogFile" to "db/changelog/db.changelog-master.xml",
+            "searchPath" to "${project.projectDir}/src/main/resources",
+            "url" to env("DB_URL"),
+            "username" to env("POSTGRES_USER"),
+            "password" to env("POSTGRES_PASSWORD"),
+            "driver" to "org.postgresql.Driver"
+        )
+    }
+    runList = "main"
 }
