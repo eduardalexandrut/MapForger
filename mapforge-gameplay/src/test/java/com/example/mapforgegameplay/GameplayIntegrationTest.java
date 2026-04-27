@@ -3,6 +3,7 @@ package com.example.mapforgegameplay;
 import com.example.mapforgegameplay.mock.MockCoreClientConfig;
 import com.example.mapforgegameplay.mock.MockMessagingConfig;
 import com.example.mapforgegameplay.model.dto.ActionPayloadDTO;
+import com.example.mapforgegameplay.model.dto.CampaignActorBootstrapDTO;
 import com.example.mapforgegameplay.model.entity.*;
 import com.example.mapforgegameplay.repository.*;
 import com.example.mapforgegameplay.service.CoreClient;
@@ -15,13 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
-@Import({/*MockCoreClientConfig.class,*/ MockMessagingConfig.class})
+@Import(MockMessagingConfig.class)
 class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
     @MockitoBean
     private CoreClient coreClient;
@@ -43,24 +45,24 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Instead of a separate class, define your "Predefined Map" here
+        testDataHelper.clearAll();
+        campaignId = UUID.randomUUID();
+        // Predefined
+        //Map
         Map mockMap = new Map(1, "Arena", "Desc", 20, 20, "pic.png", null);
+        // CampaignActors
+        List<CampaignActorBootstrapDTO> campaignActors = List.of(
+            new CampaignActorBootstrapDTO(1, "CHARACTER", 100, 15,  15, 1,campaignId,1, 1),
+            new CampaignActorBootstrapDTO(2, "CHARACTER", 80, 20, 15, 1,campaignId, 2, 2),
+            new CampaignActorBootstrapDTO(3, "CHARACTER", 60, 10, 15, 1,campaignId, 3, 3)
+        );
 
-        // This is the missing link that was causing your NPE earlier
         Mockito.when(coreClient.getMapByCampaignId(any(UUID.class)))
                 .thenReturn(mockMap);
 
-        // If you need actors too:
         Mockito.when(coreClient.getActorsForCampaign(any(UUID.class)))
-                .thenReturn(List.of(/* your actor bootstrap DTOs */));
-        testDataHelper.clearAll();
-        campaignId = UUID.randomUUID();
-        // Manually insert the "Predefined Data"
-        CampaignActor a1 = new CampaignActor(1, "CHARACTER", 100, 15,  15, 1,campaignId);
-        CampaignActor a2 = new CampaignActor(2, "CHARACTER", 80, 20, 15, 1,campaignId);
-        CampaignActor a3 = new CampaignActor(3, "CHARACTER", 60, 10, 15, 1,campaignId);
+                .thenReturn(campaignActors);
 
-        campaignActorRepository.saveAll(List.of(a1, a2, a3));
         gameService.startGame(campaignId);
     }
 

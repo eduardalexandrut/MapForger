@@ -1,17 +1,19 @@
 package com.example.mapforgegameplay.service;
 
 import com.example.mapforgegameplay.model.dto.ActionPayloadDTO;
+import com.example.mapforgegameplay.model.dto.CampaignActorBootstrapDTO;
 import com.example.mapforgegameplay.model.dto.GameStateDTO;
 import com.example.mapforgegameplay.model.dto.TurnResultDTO;
 import com.example.mapforgegameplay.model.entity.*;
+import com.example.mapforgegameplay.model.entity.Map;
 import com.example.mapforgegameplay.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class GameService {
     private final CampaignActorRepository campaignActorRepository;
     private final SimpMessageSendingOperations messagingTemplate;
     private final CoreClient coreClient;
+    private UUID campaignId;
 
     // ---------------------------------------------------------------
     // START GAME
@@ -36,13 +39,29 @@ public class GameService {
             throw new IllegalStateException("Game already started for campaign " + campaignId);
         }
 
-        // 1. Fetch actors from MapForge
-        List<CampaignActor> actors = campaignActorRepository
-                .findByCampaignId(campaignId);
+        this.campaignId = campaignId;
 
-        if (actors.isEmpty()) {
+        // 1. Fetch actors from MapForge
+        List<CampaignActorBootstrapDTO> bootstrapActors = coreClient.getActorsForCampaign(campaignId);
+
+
+        if (bootstrapActors.isEmpty()) {
             throw new IllegalStateException("No actors found for campaign " + campaignId);
         }
+
+        List<CampaignActor> actors = bootstrapActors.stream().map(dto -> {
+            CampaignActor actor = new CampaignActor();
+            actor.setId(dto.getId());
+            actor.setType(dto.getType());
+            actor.setHp(dto.getHp());
+            actor.setXp(dto.getXp());
+            actor.setWeaponDamage(dto.getWeaponDamage());
+            actor.setOwnerId(dto.getOwnerId());
+            actor.setCampaignId(campaignId);
+            return actor;
+        }).toList();
+
+        campaignActorRepository.saveAll(actors);
 
         // 2. Build turn order — simple: just the order they come back from DB
         //    You can shuffle or sort by initiative here later
@@ -99,8 +118,25 @@ public class GameService {
     }
 
     private boolean isMovementValid(ActionPayloadDTO payload, Map currentMap) {
-        return payload.getX() >= 0 && payload.getX() <= currentMap.getWidth()
-                && payload.getY() >= 0 && payload.getY() <= currentMap.getHeight();
+        final boolean cellIsValid = payload.getX() >= 0 && payload.getX() < currentMap.getWidth()
+                && payload.getY() >= 0 && payload.getY() < currentMap.getHeight();
+
+        if (!cellIsValid) {
+            throw new IllegalArgumentException("Position out of bounds");
+        }
+
+        final boolean cellIsOccupied = campaignActorRepository
+                .findByCampaignId(campaignId)
+                .stream()
+                .filter(c -> !c.getId().equals(payload.getActorId())) // exclude self
+                .anyMatch(c -> Objects.equals(c.getX(), payload.getX())
+                        && Objects.equals(c.getY(), payload.getY()));
+
+        if (cellIsOccupied) {
+            throw new IllegalArgumentException("Cell is already occupied");
+        }
+
+        return true;
     }
 
     private Map getCurrentMap(UUID campaignId) {
@@ -160,6 +196,14 @@ public class GameService {
     // ---------------------------------------------------------------
 
     private TurnResultDTO handleMove(ActionPayloadDTO payload, Turn turn, UUID campaignId) {
+        // Update actor position
+        CampaignActor actor = campaignActorRepository.findById(payload.getActorId())
+                .orElseThrow(() -> new IllegalArgumentException("Actor not found"));
+        actor.setX(payload.getX());
+        actor.setY(payload.getY());
+        campaignActorRepository.save(actor);
+
+        // Persist movement action
         MovementAction action = new MovementAction();
         action.setActorId(payload.getActorId());
         action.setTurnIndex(turn.getId().getIndex());

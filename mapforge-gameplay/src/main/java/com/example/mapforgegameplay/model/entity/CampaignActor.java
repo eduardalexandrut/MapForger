@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-//@AllArgsConstructor
+@AllArgsConstructor
 @Table(name = "campaign_actors")
 @NoArgsConstructor
 public class CampaignActor {
@@ -38,14 +38,20 @@ public class CampaignActor {
     @Column(name = "campaign_id", nullable = false)
     private UUID campaignId;        // plain ref to Core's campaigns table
 
-    public CampaignActor(Integer id, String type, Integer hp, Integer xp, Integer weaponDamage, Integer ownerId, UUID campaignId) {
-        this.id = id;
-        this.type = type;
-        this.hp = hp;
-        this.xp = xp;
-        this.weaponDamage = weaponDamage;
-        this.ownerId = ownerId;
-        this.campaignId = campaignId;
-    }
+    @Column(name = "x")
+    private Integer x;
+
+    @Column(name = "y")
+    private Integer y;
+
+//    public CampaignActor(Integer id, String type, Integer hp, Integer xp, Integer weaponDamage, Integer ownerId, UUID campaignId) {
+//        this.id = id;
+//        this.type = type;
+//        this.hp = hp;
+//        this.xp = xp;
+//        this.weaponDamage = weaponDamage;
+//        this.ownerId = ownerId;
+//        this.campaignId = campaignId;
+//    }
 
 }

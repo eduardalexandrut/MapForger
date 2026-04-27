@@ -25,6 +25,6 @@ public class MapService {
     }
 
     public Map getMapByCampaignId(UUID campaignId) {
-        return mapRepository.getMapByCampaignId(campaignId);
+        return mapRepository.findByCampaignId(campaignId).orElse(null);
     }
 }

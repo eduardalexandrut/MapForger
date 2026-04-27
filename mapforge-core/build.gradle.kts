@@ -7,6 +7,23 @@ plugins {
     id("org.liquibase.gradle") version "2.2.0"
 }
 
+// --- LOCAL ENVIRONMENT LOADING ---
+val localEnv = mutableMapOf<String, String>()
+val envFile = file("${project.projectDir}/.env")
+
+if (envFile.exists()) {
+    envFile.forEachLine { line ->
+        val parts = line.split("=", limit = 2)
+        if (parts.size == 2) {
+            localEnv[parts[0].trim()] = parts[1].trim()
+        }
+    }
+}
+
+fun env(key: String): String =
+    System.getenv(key) ?: localEnv[key] ?: error("Missing env var: $key in ${project.name}")
+// ---------------------------------
+
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
@@ -31,23 +48,20 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
-    //Eureka
+    // Eureka & OpenFeign
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
-    //JWT
+    // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-    //Postgres
+    // Postgres & Hibernate
     runtimeOnly("org.postgresql:postgresql")
-
-    //Hibernate tools
     implementation("org.hibernate:hibernate-core:6.3.0.Final")
 
-    //Liquibase
-    //    implementation("org.liquibase:liquibase-core")
-    // Dependencies required for running liquibase for tests
+    // Liquibase
     liquibaseRuntime("org.liquibase:liquibase-core:4.23.0")
     liquibaseRuntime("info.picocli:picocli:4.7.4")
     liquibaseRuntime("org.liquibase.ext:liquibase-hibernate5:4.22.0")
@@ -55,56 +69,31 @@ dependencies {
     liquibaseRuntime(files(sourceSets["main"].output))
     liquibaseRuntime(files(sourceSets["main"].compileClasspath))
     liquibaseRuntime(files(sourceSets["main"].runtimeClasspath))
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
-    //Dotenv
+    // Dotenv (for runtime)
     implementation("io.github.cdimascio:dotenv-java:3.0.0")
-
 }
-
 
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
-
-    //Load values from .env
-    val envFile = file(".env")
-    if (envFile.exists()) {
-        envFile.forEachLine { line ->
-            val parts = line.split("=", limit = 2)
-            if (parts.size == 2) {
-                val key = parts[0].trim()
-                val value = parts[1].trim()
-                if (System.getenv(key) == null) {
-                    System.setProperty(key, value)
-                }
-            }
-        }
-    }
-
-    fun env(key: String): String =
-        System.getenv(key) ?: System.getProperty(key) ?: error("Missing env var: $key")
-
-    liquibase {
-        activities.register("main") {
-            arguments = mapOf(
-                // 1. The relative path from the searchPath
-                "changeLogFile" to "db/changelog/db.changelog-master.xml",
-
-                // 2. Add the searchPath to include your resources folder
-                "searchPath" to "${project.projectDir}/src/main/resources",
-                "url" to env("DB_URL"),
-                "username" to env("POSTGRES_USER"),
-                "password" to env("POSTGRES_PASSWORD"),
-                "driver" to "org.postgresql.Driver"
-            )
-        }
-        runList = "main"
-
-    }
 }
 
-val props = Properties().apply {
-    load(file("src/main/resources/application.yaml").inputStream())
+println("CORE LIQUIBASE URL = ${env("CORE_DB_URL")}")
+
+liquibase {
+    activities.register("main") {
+        arguments = mapOf(
+            "changeLogFile" to "db/changelog/db.changelog-master.xml",
+            "searchPath" to "${project.projectDir}/src/main/resources",
+            "url" to env("CORE_DB_URL"),
+            "username" to env("POSTGRES_USER"),
+            "password" to env("POSTGRES_PASSWORD"),
+            "driver" to "org.postgresql.Driver",
+            "liquibaseSchemaName" to "public",
+            "defaultSchemaName" to "public"
+        )
+    }
+    runList = "main"
 }
