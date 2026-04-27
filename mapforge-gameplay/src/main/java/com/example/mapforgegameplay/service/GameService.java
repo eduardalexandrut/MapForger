@@ -288,7 +288,7 @@ public class GameService {
         int deadIndex = order.indexOf(payload.getTargetId());
         order.remove(payload.getTargetId());
 
-        boolean gameFinished = order.isEmpty();
+        boolean gameFinished = order.size() <= 1;
 
         if (gameFinished) {
             // Last actor standing — game over

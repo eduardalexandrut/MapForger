@@ -32,7 +32,7 @@ public class GameSession {
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "game_session_turn_order", joinColumns = @JoinColumn(name = "campaign_id"))
     @Column(name = "actor_id")
     @OrderColumn(name = "position")

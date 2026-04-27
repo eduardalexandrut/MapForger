@@ -8,6 +8,8 @@ import com.example.mapforgegameplay.model.entity.*;
 import com.example.mapforgegameplay.repository.*;
 import com.example.mapforgegameplay.service.CoreClient;
 import com.example.mapforgegameplay.service.GameService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
     @Autowired private MovementActionRepository movementActionRepository;
     @Autowired private DeathActionRepository deathActionRepository;
     @Autowired private GameplayTestDataHelper testDataHelper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     // Map dimensions for boundary tests
     private static final int MAP_WIDTH = 20;
@@ -246,7 +250,7 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         // Kill actors 2 and 3 first, leaving only actor 1
         killActor(2, 1);
         gameService.endTurn(campaignId, 1);
-        killActor(3, 1);
+        killActor(1, 3);
 
         GameSession session = gameSessionRepository.findById(campaignId).orElseThrow();
         assertThat(session.getStatus()).isEqualTo(GameStatus.FINISHED);
@@ -261,10 +265,14 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         actor.setHp(1);
         campaignActorRepository.save(actor);
 
+        entityManager.clear();
+
         ActionPayloadDTO payload = new ActionPayloadDTO();
         payload.setActorId(attackerId);
         payload.setType("ATTACK");
         payload.setTargetId(targetId);
         gameService.handleAction(campaignId, payload);
+
+        entityManager.clear();
     }
 }
