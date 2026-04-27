@@ -2,13 +2,17 @@ package com.example.mapforgecore.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "campaign_actors")
 public class CampaignActor {
     @Id
@@ -43,4 +47,10 @@ public class CampaignActor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "npc")
     private Npc npc;
+
+    @Column(name = "x")
+    private Integer x;
+
+    @Column(name = "y")
+    private Integer y;
 }

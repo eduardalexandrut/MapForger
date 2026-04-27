@@ -56,9 +56,9 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         Map mockMap = new Map(1, "Arena", "Desc", 20, 20, "pic.png", null);
         // CampaignActors
         List<CampaignActorBootstrapDTO> campaignActors = List.of(
-            new CampaignActorBootstrapDTO(1, "CHARACTER", 100, 15,  15, 1,campaignId,1, 1),
-            new CampaignActorBootstrapDTO(2, "CHARACTER", 80, 20, 15, 1,campaignId, 2, 2),
-            new CampaignActorBootstrapDTO(3, "CHARACTER", 60, 10, 15, 1,campaignId, 3, 3)
+                new CampaignActorBootstrapDTO(1, "CHARACTER", 100, 0, 15, 3, 1, campaignId, 0, 0),
+                new CampaignActorBootstrapDTO(2, "CHARACTER", 80, 0, 20, 3, 2, campaignId, 1, 1),
+                new CampaignActorBootstrapDTO(3, "CHARACTER", 60, 0, 10, 3, 3, campaignId, 2, 2)
         );
 
         Mockito.when(coreClient.getMapByCampaignId(any(UUID.class)))
@@ -88,8 +88,8 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
 
         List<MovementAction> moves = movementActionRepository.findAll();
         assertThat(moves).hasSize(1);
-        assertThat(moves.get(0).getX()).isEqualTo(3);
-        assertThat(moves.get(0).getY()).isEqualTo(5);
+        assertThat(moves.getFirst().getX()).isEqualTo(3);
+        assertThat(moves.getFirst().getY()).isEqualTo(5);
     }
 
     @Test
@@ -158,6 +158,62 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
                 .hasMessageContaining("not actor 2's turn");
     }
 
+    @Test
+    @DisplayName("Valid move — within speed limit")
+    void shouldAllowMoveWithinSpeedLimit() {
+        ActionPayloadDTO payload = new ActionPayloadDTO();
+        payload.setActorId(1);
+        payload.setType("MOVE");
+        payload.setX(2);  // distance 2 from origin, speed is 3
+        payload.setY(2);
+
+        assertThatNoException().isThrownBy(() ->
+                gameService.handleAction(campaignId, payload));
+    }
+
+    @Test
+    @DisplayName("Invalid move — exceeds speed limit")
+    void shouldRejectMoveExceedingSpeedLimit() {
+        // First move actor 1 to a known position
+        ActionPayloadDTO firstMove = new ActionPayloadDTO();
+        firstMove.setActorId(1);
+        firstMove.setType("MOVE");
+        firstMove.setX(0);
+        firstMove.setY(0);
+        gameService.handleAction(campaignId, firstMove);
+        gameService.endTurn(campaignId, 1);
+
+        // Actor 3's turn — skip
+        gameService.endTurn(campaignId, 2);
+
+        // Actor 3's turn — skip
+        gameService.endTurn(campaignId, 3);
+
+        // Back to actor 1 — try to move 5 cells away (speed is 3)
+        ActionPayloadDTO secondMove = new ActionPayloadDTO();
+        secondMove.setActorId(1);
+        secondMove.setType("MOVE");
+        secondMove.setX(5);
+        secondMove.setY(5);
+
+        assertThatThrownBy(() -> gameService.handleAction(campaignId, secondMove))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("exceeds speed limit");
+    }
+
+    @Test
+    @DisplayName("Invalid move — diagonal move within speed limit is allowed")
+    void shouldAllowDiagonalMoveWithinSpeedLimit() {
+        ActionPayloadDTO payload = new ActionPayloadDTO();
+        payload.setActorId(1);
+        payload.setType("MOVE");
+        payload.setX(3);  // diagonal 3,3 — Chebyshev distance is 3, exactly at speed limit
+        payload.setY(3);
+
+        assertThatNoException().isThrownBy(() ->
+                gameService.handleAction(campaignId, payload));
+    }
+
     // ---------------------------------------------------------------
     // ATTACK TESTS
     // ---------------------------------------------------------------
@@ -175,7 +231,7 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
 
         List<AttackAction> attacks = attackActionRepository.findAll();
         assertThat(attacks).hasSize(1);
-        assertThat(attacks.get(0).getDamage()).isEqualTo(15);
+        assertThat(attacks.getFirst().getDamage()).isEqualTo(15);
 
         // Verify hp was reduced
         CampaignActor target = campaignActorRepository.findById(2).orElseThrow();
@@ -221,8 +277,8 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
 
         List<DeathAction> deaths = deathActionRepository.findAll();
         assertThat(deaths).hasSize(1);
-        assertThat(deaths.get(0).getActorId()).isEqualTo(2);
-        assertThat(deaths.get(0).getKillerId()).isEqualTo(1);
+        assertThat(deaths.getFirst().getActorId()).isEqualTo(2);
+        assertThat(deaths.getFirst().getKillerId()).isEqualTo(1);
     }
 
     @Test

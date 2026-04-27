@@ -57,6 +57,7 @@ public class GameService {
             actor.setXp(dto.getXp());
             actor.setWeaponDamage(dto.getWeaponDamage());
             actor.setOwnerId(dto.getOwnerId());
+            actor.setSpeed(dto.getSpeed());
             actor.setCampaignId(campaignId);
             return actor;
         }).toList();
@@ -134,6 +135,25 @@ public class GameService {
 
         if (cellIsOccupied) {
             throw new IllegalArgumentException("Cell is already occupied");
+        }
+
+        // Speed check — Chebyshev distance (max of x and y deltas, allows diagonals)
+        CampaignActor actor = campaignActorRepository.findById(payload.getActorId())
+                .orElseThrow(() -> new IllegalArgumentException("Actor not found"));
+
+        // Actor has no position yet (first move) — any valid cell within speed is fine
+        if (actor.getX() == null || actor.getY() == null) {
+            return true;
+        }
+
+        int dx = Math.abs(payload.getX() - actor.getX());
+        int dy = Math.abs(payload.getY() - actor.getY());
+        int distance = Math.max(dx, dy); // Chebyshev distance
+
+        if (distance > actor.getSpeed()) {
+            throw new IllegalArgumentException(
+                    "Move exceeds speed limit. Max: " + actor.getSpeed() + ", attempted: " + distance
+            );
         }
 
         return true;

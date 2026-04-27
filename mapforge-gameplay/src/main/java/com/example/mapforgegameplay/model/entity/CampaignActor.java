@@ -32,6 +32,9 @@ public class CampaignActor {
     @Column(name = "weapon_damage", nullable = false)
     private Integer weaponDamage;
 
+    @Column(name = "speed", nullable = false)
+    private Integer speed;
+
     @Column(name = "owner_id", nullable = false)
     private Integer ownerId;        // plain ref to Core's users table
 
@@ -44,14 +47,5 @@ public class CampaignActor {
     @Column(name = "y")
     private Integer y;
 
-//    public CampaignActor(Integer id, String type, Integer hp, Integer xp, Integer weaponDamage, Integer ownerId, UUID campaignId) {
-//        this.id = id;
-//        this.type = type;
-//        this.hp = hp;
-//        this.xp = xp;
-//        this.weaponDamage = weaponDamage;
-//        this.ownerId = ownerId;
-//        this.campaignId = campaignId;
-//    }
 
 }

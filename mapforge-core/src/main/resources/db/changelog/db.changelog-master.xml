@@ -4,6 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
     <include file="db.changelog.sql" relativeToChangelogFile="true"/>
+    <include file="003-add-speed-to-campaign-actors.sql" relativeToChangelogFile="true"/>
 <!--    <include file="26-08-2025-add-test-column-to-users.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="26-08-2025-remove-test-column-from-users.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="30-08-2025-change-campaigns-pk-to-string.sql" relativeToChangelogFile="true"/>-->

@@ -14,8 +14,11 @@ public class CampaignActorBootstrapDTO {
     private Integer hp;
     private Integer xp;
     private Integer weaponDamage;
+    private Integer speed;
     private Integer ownerId;
     private UUID campaignId;
+    private Integer x;
+    private Integer y;
 
     public static CampaignActorBootstrapDTO fromEntity(CampaignActor actor) {
         return new CampaignActorBootstrapDTO(
@@ -23,10 +26,12 @@ public class CampaignActorBootstrapDTO {
                 actor.getType(),
                 actor.getHp(),
                 actor.getXp(),
-                // weaponDamage comes from the character
-                actor.getCharacter() != null ? actor.getCharacter().getWeaponDamage() : null,
+                actor.getCharacter() != null ? actor.getCharacter().getWeaponDamage() : 0,
+                actor.getCharacter() != null ? actor.getCharacter().getSpeed() : 0,
                 actor.getCampaignMember().getOwner().getId(),
-                actor.getCampaignMember().getCampaign().getId()
+                actor.getCampaignMember().getCampaign().getId(),
+                actor.getX(),
+                actor.getY()
         );
     }
 }
