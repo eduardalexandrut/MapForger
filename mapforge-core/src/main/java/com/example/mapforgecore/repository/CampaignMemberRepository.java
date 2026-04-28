@@ -12,16 +12,11 @@ import java.util.UUID;
 
 public interface CampaignMemberRepository extends JpaRepository<CampaignMember, CampaignMemberPK> {
     @Query("""
-         SELECT cm
+         SELECT COUNT(cm) > 0
          FROM CampaignMember cm
-         WHERE cm.owner.id = :userId
+         WHERE cm.owner.id = :ownerId
          AND cm.campaign.id = :campaignId
     """)
-    Optional<CampaignMember> findByOwnerIdAndCampaignId(
-            @Param("userId") Integer userId,
-            @Param("campaignId") Integer campaignId
-    );
-
     boolean existsByIdOwnerIdAndIdCampaignId(Integer ownerId, UUID campaignId);
     Optional<CampaignMember> findByIdOwnerIdAndIdCampaignId(Integer ownerId, UUID campaignId);
 }

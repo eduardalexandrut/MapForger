@@ -1,24 +1,17 @@
 version: "3.9"
 
 services:
-
   mapforge-eureka:
-    build:
-      context: ./mapforge-eureka
+    build: ./mapforge-eureka
     container_name: mapforge-eureka
     ports:
       - "8761:8761"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://mapforge-eureka:8761"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - microservices-net
 
-  postgres:
+  db-core:
     image: postgres:17
-    container_name: postgres
+    container_name: db-core
     environment:
       POSTGRES_DB: MapForge
       POSTGRES_USER: postgres
@@ -26,58 +19,61 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - core_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  db-gameplay:
+    image: postgres:17
+    container_name: db-gameplay
+    environment:
+      POSTGRES_DB: MapForgeGameplay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - gameplay_data:/var/lib/postgresql/data
     networks:
       - microservices-net
 
   mapforge-core:
+    build: ./mapforge-core
+    container_name: mapforge-core
     environment:
-      - DOCKER_DB_URL=jdbc:postgresql://postgres:5432/MapForge
+      - DOCKER_DB_URL=jdbc:postgresql://db-core:5432/MapForge
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    build:
-      context: ./mapforge-core
-    container_name: mapforge-core
     depends_on:
-      mapforge-eureka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - mapforge-eureka
+      - db-core
     ports:
       - "8082:8082"
     networks:
       - microservices-net
 
   mapforge-gameplay:
+    build: ./mapforge-gameplay
+    container_name: mapforge-gameplay
     environment:
-      - DOCKER_DB_URL=jdbc:postgresql://postgres:5432/MapForgeGameplay
+      - DOCKER_DB_URL=jdbc:postgresql://db-gameplay:5432/MapForgeGameplay
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    build:
-      context: ./mapforge-gameplay
-    container_name: mapforge-gameplay
     depends_on:
-      mapforge-eureka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - mapforge-eureka
+      - db-gameplay
     ports:
       - "8081:8081"
     networks:
       - microservices-net
 
   mapforge-gateway:
-    build:
-      context: ./mapforge-gateway
+    build: ./mapforge-gateway
     container_name: mapforge-gateway
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mapforge-eureka:8761/eureka/
     depends_on:
-      mapforge-eureka:
-        condition: service_healthy
+      - mapforge-eureka
     ports:
       - "8080:8080"
     networks:
@@ -88,4 +84,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  core_data:
+  gameplay_data:

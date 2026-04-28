@@ -37,6 +37,8 @@ public class CampaignActorService {
         campaignActor.setCharacter(character.get());
         campaignActor.setHp(character.get().getArmor());
         campaignActor.setXp(0);
+        campaignActor.setX(0);//FIXME
+        campaignActor.setY(0);//FIXME
         campaignActor.setWeaponDamage(character.get().getWeaponDamage());
         campaignActor.setType("PLAYER");
         campaignActor.setCampaignMember(campaignMember.get());

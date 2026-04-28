@@ -10,19 +10,19 @@ spring:
       routes:
         # WebSocket Route (must come before REST route)
         - id: gameplay-websocket
-          uri: lb:ws://mapforge-gameplay
+          uri: lb:ws://MAPFORGE-GAMEPLAY
           predicates:
             - Path=/mapforge-gameplay/gameplay-ws/**
 
         # Gameplay REST Route
         - id: gameplay-rest
-          uri: lb://mapforge-gameplay
+          uri: lb://MAPFORGE-GAMEPLAY
           predicates:
             - Path=/mapforge-gameplay/**
 
         # Core REST Route
         - id: core-rest
-          uri: lb://mapforge-core
+          uri: lb://MAPFORGE-CORE
           predicates:
             - Path=/mapforge-core/**
 

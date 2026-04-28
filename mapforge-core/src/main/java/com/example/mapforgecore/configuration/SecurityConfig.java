@@ -15,17 +15,15 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Configure CORS first
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable()) // disable CSRF for APIs
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/**").permitAll() // allow signup & login without auth
-                        .anyRequest().authenticated() // everything else requires login
+                        .anyRequest().permitAll() // Let everything through
                 );
         return http.build();
     }

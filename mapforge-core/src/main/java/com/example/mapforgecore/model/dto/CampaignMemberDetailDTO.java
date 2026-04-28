@@ -9,10 +9,14 @@ import java.util.stream.Collectors;
 public record CampaignMemberDetailDTO(UUID ownerId, String ownerName, String role, Set<CampaignActorDetailDTO> actors) {
     public static CampaignMemberDetailDTO fromEntity(CampaignMember campaignMember) {
         return new CampaignMemberDetailDTO(
-                campaignMember.getId().getCampaignId(),
+                campaignMember.getCampaign().getId(),
                 campaignMember.getOwner().getUsername(),
                 campaignMember.getRole(),
-                campaignMember.getCampaignActors().stream().map(CampaignActorDetailDTO::fromEntity).collect(Collectors.toSet())
+                campaignMember.getCampaignActors() == null ?
+                        Set.of() :
+                        campaignMember.getCampaignActors().stream()
+                                .map(CampaignActorDetailDTO::fromEntity)
+                                .collect(Collectors.toSet())
         );
     }
 }

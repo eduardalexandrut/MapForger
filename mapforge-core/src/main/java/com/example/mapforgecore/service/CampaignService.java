@@ -25,8 +25,8 @@ public class CampaignService {
     private final UserRepository userRepository;
     private final CampaignMemberRepository campaignMemberRepository;
     private final MapRepository mapRepository;
-    private CampaignMemberService campaignMemberService;
-    private CampaignActorService campaignActorService;
+    private final CampaignMemberService campaignMemberService;
+    private final CampaignActorService campaignActorService;
 
 
     public CampaignSummaryDTO createCampaign(CampaignFormDTO campaignFormDTO) {

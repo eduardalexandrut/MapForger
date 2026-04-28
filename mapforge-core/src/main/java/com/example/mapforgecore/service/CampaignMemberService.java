@@ -22,32 +22,64 @@ public class CampaignMemberService {
     private final CampaignActorRepository campaignActorRepository;
 
     public Optional<CampaignMemberDetailDTO> createCampaignMember(String campaignId, Integer userId, Integer characterId) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Campaign> campaign = campaignRepository.findById(String.valueOf(campaignId));
+        System.out.println("DEBUG: Entering createMember for user: " + userId + " for campaign: " + campaignId);
 
-        if (user.isEmpty() || campaign.isEmpty()) {
+        // 1. Convert the String ID to UUID safely
+        UUID campaignUuid;
+        try {
+            campaignUuid = UUID.fromString(campaignId);
+        } catch (IllegalArgumentException e) {
+            System.err.println("DEBUG: Invalid UUID format: " + campaignId);
             return Optional.empty();
         }
 
-        // Check if already a member
-        boolean alreadyMember = campaignMemberRepository
-                .existsByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(campaignId));
+        // 2. Fetch Entities
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Campaign> campaign = campaignRepository.findById(campaignUuid);
 
-        if (alreadyMember) {
-            return Optional.empty(); // or return existing member
+        System.out.println("DEBUG: User found: " + user.isPresent());
+        System.out.println("DEBUG: Campaign found: " + campaign.isPresent());
+
+        if (user.isEmpty() || campaign.isEmpty()) {
+            System.out.println("DEBUG: Exiting because User or Campaign was missing in DB");
+            return Optional.empty();
         }
 
+        // 3. Check for existing membership using the UUID-compatible repository method
+        boolean alreadyMember = campaignMemberRepository.existsByIdOwnerIdAndIdCampaignId(userId, campaignUuid);
+
+        if (alreadyMember) {
+            System.out.println("DEBUG: User " + userId + " is already a member of campaign " + campaignId);
+            // Optional: Fetch and return existing instead of empty
+            return campaignMemberRepository.findByIdOwnerIdAndIdCampaignId(userId, campaignUuid)
+                    .map(CampaignMemberDetailDTO::fromEntity);
+        }
+
+        // 4. Build the Composite Key
         CampaignMemberPK pk = new CampaignMemberPK();
         pk.setOwnerId(userId);
-        pk.setCampaignId(UUID.fromString(campaignId));
+        pk.setCampaignId(campaignUuid);
 
+        // 5. Build and Save the Entity
         CampaignMember member = new CampaignMember();
         member.setId(pk);
         member.setOwner(user.get());
         member.setCampaign(campaign.get());
-        member.setRole("PLAYER");
 
-        return Optional.of(CampaignMemberDetailDTO.fromEntity(
-                campaignMemberRepository.save(member)));
+        // Logic: If the user is the one who created the campaign, they are the MASTER
+        if (campaign.get().getCreator().getId().equals(userId)) {
+            member.setRole("MASTER");
+        } else {
+            member.setRole("PLAYER");
+        }
+
+        System.out.println("DEBUG: Saving new CampaignMember with role: " + member.getRole());
+
+        CampaignMember savedMember = campaignMemberRepository.save(member);
+
+        // Important: Flush the transaction if you want to see the SQL immediately in logs
+        campaignMemberRepository.flush();
+
+        return Optional.of(CampaignMemberDetailDTO.fromEntity(savedMember));
     }
 }

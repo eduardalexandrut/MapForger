@@ -70,7 +70,7 @@ CREATE TABLE characters (
     description TEXT,
     backstory TEXT,
     pic VARCHAR(255),
-    "createdAt" DATE DEFAULT CURRENT_DATE,
+    created_at DATE DEFAULT CURRENT_DATE,
     CONSTRAINT characters_creator_fkey FOREIGN KEY (creator) REFERENCES users(id)
 );
 

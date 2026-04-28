@@ -5,6 +5,9 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
     <include file="db.changelog.sql" relativeToChangelogFile="true"/>
     <include file="003-add-speed-to-campaign-actors.sql" relativeToChangelogFile="true"/>
+<!--    <include file="004-add-column-pic-in-maps.sql" relativeToChangelogFile="true"/>-->
+    <include file="005-insert-default-maps.sql" relativeToChangelogFile="true"/>
+    <include file="006-add-position-to-campaign-actors.sql" relativeToChangelogFile="true"/>
 <!--    <include file="26-08-2025-add-test-column-to-users.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="26-08-2025-remove-test-column-from-users.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="30-08-2025-change-campaigns-pk-to-string.sql" relativeToChangelogFile="true"/>-->
@@ -19,8 +22,6 @@
 <!--    <include file="20-01-2026-add-created-at-column.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="22-01-2026-change-pic-type-to-varchar.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="22-01-2026-add-fk-campaigns-users.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="24-01-2026-add-column-pic-in-maps.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="24-01-2026-insert-default-maps.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="27-04-2026-add-x-y-cols-to-campaignactor.sql" relativeToChangelogFile="true"/>-->
 <!--    <include file="27-04-2026-move-gameplay-tables-to-gameplay-service.sql" relativeToChangelogFile="true"/>-->
 </databaseChangeLog>

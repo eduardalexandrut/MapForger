@@ -73,12 +73,15 @@ public class CampaignController {
     }
 
     // POST /api/v1/campaigns/{id}/join
-    @PostMapping("/{id}/join")
+    @PostMapping("/{id}/testjoin")
     public ResponseEntity<CampaignActorBootstrapDTO> joinCampaign(
             @PathVariable String id,
             @RequestBody JoinCampaignRequestDTO request) {
-        return campaignService.joinCampaign(id, request.userId(), request.characterId())
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        System.out.println("!!! CONTROLLER HIT !!! ID: " + id);
+        System.out.println("BODY: " + request.toString());
+
+            return  campaignService.joinCampaign(id, request.userId(), request.characterId())
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

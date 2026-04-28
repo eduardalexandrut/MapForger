@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,7 @@ public class CampaignMember {
     private Campaign campaign;
 
     @OneToMany(mappedBy = "campaignMember", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CampaignActor> campaignActors;
+    private List<CampaignActor> campaignActors = new ArrayList<>();
 
     @Column(name = "role", nullable = false, length = 10)
     private String role;

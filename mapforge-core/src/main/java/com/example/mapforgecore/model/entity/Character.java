@@ -62,7 +62,7 @@ public class Character {
     @Column(name = "pic")
     private String pic;
 
-    @Column(name = "createdAt", insertable = false, updatable = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
