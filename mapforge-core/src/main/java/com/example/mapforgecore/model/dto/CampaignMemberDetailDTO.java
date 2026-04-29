@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public record CampaignMemberDetailDTO(UUID ownerId, String ownerName, String role, Set<CampaignActorDetailDTO> actors) {
+public record CampaignMemberDetailDTO(UUID ownerId, String ownerName, String role, Set<CampaignActorBootstrapDTO> actors) {
     public static CampaignMemberDetailDTO fromEntity(CampaignMember campaignMember) {
         return new CampaignMemberDetailDTO(
                 campaignMember.getCampaign().getId(),
@@ -15,7 +15,7 @@ public record CampaignMemberDetailDTO(UUID ownerId, String ownerName, String rol
                 campaignMember.getCampaignActors() == null ?
                         Set.of() :
                         campaignMember.getCampaignActors().stream()
-                                .map(CampaignActorDetailDTO::fromEntity)
+                                .map(CampaignActorBootstrapDTO::fromEntity)
                                 .collect(Collectors.toSet())
         );
     }
