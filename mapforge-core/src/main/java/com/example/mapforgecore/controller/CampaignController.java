@@ -15,6 +15,7 @@ import com.example.mapforgecore.service.CampaignService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,11 +78,17 @@ public class CampaignController {
     public ResponseEntity<CampaignActorBootstrapDTO> joinCampaign(
             @PathVariable String id,
             @RequestBody JoinCampaignRequestDTO request) {
-        System.out.println("!!! CONTROLLER HIT !!! ID: " + id);
-        System.out.println("BODY: " + request.toString());
 
             return  campaignService.joinCampaign(id, request.userId(), request.characterId())
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // GET/api/v1/campaigns/{id}/is-member
+    @GetMapping("/{id}/is-member")
+    public ResponseEntity<Boolean> isCampaignMember(@PathVariable String id, @RequestParam Integer userId) {
+        return ResponseEntity.ok(this.campaignService.isCampaignMember(id, userId));
+//                .map(ResponseEntity::ok)
+//                .orElse(() -> ResponseEntity.notFound().build());
     }
 }

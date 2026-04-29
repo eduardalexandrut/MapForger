@@ -10,12 +10,12 @@ import com.example.mapforgecore.repository.MapRepository;
 import com.example.mapforgecore.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,5 +87,9 @@ public class CampaignService {
         // 2. Then create actor
         return campaignActorService
                 .createCampaignActor(campaignId, userId, characterId);
+    }
+
+    public boolean isCampaignMember(String id, Integer userId) {
+        return campaignMemberRepository.findByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(id)).isPresent();
     }
 }
