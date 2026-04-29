@@ -10,7 +10,7 @@ public record CampaignActorDetailDTO(
         String type,
         Integer xp,
         Integer hp,
-        Character character,
+        CharacterSummaryDTO character,
         Npc npc
 ) {
     public static CampaignActorDetailDTO fromEntity(CampaignActor actor) {
@@ -20,7 +20,7 @@ public record CampaignActorDetailDTO(
                 actor.getType(),
                 actor.getXp(),
                 actor.getHp(),
-                actor.getCharacter(),
+                CharacterSummaryDTO.fromEnity(actor.getCharacter()),
                 actor.getNpc()
         );
     }
