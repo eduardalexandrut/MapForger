@@ -15,4 +15,5 @@ public class TurnResultDTO {
     private Boolean turnEnded;
     private Integer deadActorId;      // null unless someone died
     private Boolean gameFinished;     // true if no actors remain
+    private Integer remainingHp;
 }

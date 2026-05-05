@@ -1,6 +1,9 @@
 package com.example.mapforgegameplay.controller;
 
+import com.example.mapforgegameplay.model.dto.CampaignActorBootstrapDTO;
+import com.example.mapforgegameplay.repository.GameSessionRepository;
 import com.example.mapforgegameplay.service.PresenceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -12,21 +15,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+//@RequiredArgsConstructor
 @Controller
-//@RequestMapping("/ws")
+@RequestMapping("/ws")
 public class LobbyController {
 
     private PresenceService presenceService;
+    private GameSessionRepository gameSessionRepository;
 
-    public LobbyController(PresenceService presenceService) {
+    public  LobbyController(PresenceService presenceService, GameSessionRepository gameSessionRepository) {
         this.presenceService = presenceService;
+        this.gameSessionRepository = gameSessionRepository;
     }
+
 
     @MessageMapping("/room.{campaignId}.join")
     @SendTo("/topic/room.{campaignId}.presence")
     public Set<String> join(@DestinationVariable String campaignId, @Payload String username, SimpMessageHeaderAccessor headerAccessor) {
+
         if (headerAccessor.getSessionAttributes() != null) {
             headerAccessor.getSessionAttributes().put("username", username);
             headerAccessor.getSessionAttributes().put("campaignId", campaignId);
@@ -36,5 +46,6 @@ public class LobbyController {
 
         return presenceService.getOnlinePlayers(campaignId);
     }
+
 
 }

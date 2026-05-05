@@ -19,13 +19,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                // Configure CORS first
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .csrf(AbstractHttpConfigurer::disable) // disable CSRF for APIs
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/gameplay-ws/**").permitAll() // allow signup & login without auth
+//                        .anyRequest().authenticated() // everything else requires login
+//                );
+//        return http.build();
         http
-                // Configure CORS first
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable) // disable CSRF for APIs
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/gameplay-ws/**").permitAll() // allow signup & login without auth
-                        .anyRequest().authenticated() // everything else requires login
+                        .anyRequest().permitAll()  // for now during development
                 );
         return http.build();
     }

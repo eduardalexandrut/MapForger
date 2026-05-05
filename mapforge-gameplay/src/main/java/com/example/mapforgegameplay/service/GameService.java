@@ -36,7 +36,9 @@ public class GameService {
     @Transactional
     public GameStateDTO startGame(UUID campaignId) {
         if (gameSessionRepository.existsById(campaignId)) {
-            throw new IllegalStateException("Game already started for campaign " + campaignId);
+            GameSession gameSession = gameSessionRepository.findById(campaignId).orElseThrow();
+            return buildState(gameSession);
+
         }
 
         this.campaignId = campaignId;
@@ -233,7 +235,7 @@ public class GameService {
         movementActionRepository.save(action);
 
         return new TurnResultDTO("MOVE", payload.getActorId(),
-                payload.getX(), payload.getY(), null, null, false, null, false);
+                payload.getX(), payload.getY(), null, null, false, null, false, 100);
     }
 
     private GameSession getActiveSession(UUID campaignId) {
@@ -251,7 +253,7 @@ public class GameService {
                 .orElseThrow(() -> new IllegalStateException("Current turn not found"));
     }
 
-    private GameStateDTO buildState(GameSession session) {
+    public GameStateDTO buildState(GameSession session) {
         List<Integer> order = session.getTurnOrder();
         Integer currentActorId = order.isEmpty() ? null
                 : order.get(session.getCurrentTurnIndex() % order.size());
@@ -290,7 +292,7 @@ public class GameService {
         }
 
         return new TurnResultDTO("ATTACK", payload.getActorId(),
-                null, null, payload.getTargetId(), damage, false, null, false);
+                null, null, payload.getTargetId(), damage, false, null, false, 100);
     }
 
     private TurnResultDTO handleDeath(ActionPayloadDTO payload, Turn turn, UUID campaignId, int damage) {
@@ -329,6 +331,6 @@ public class GameService {
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".death", payload.getTargetId());
 
         return new TurnResultDTO("ATTACK", payload.getActorId(),
-                null, null, payload.getTargetId(), damage, false, payload.getTargetId(), gameFinished);
+                null, null, payload.getTargetId(), damage, false, payload.getTargetId(), gameFinished, 100);
     }
 }
