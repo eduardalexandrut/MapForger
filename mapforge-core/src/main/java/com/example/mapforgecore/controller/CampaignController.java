@@ -79,7 +79,7 @@ public class CampaignController {
             @PathVariable String id,
             @RequestBody JoinCampaignRequestDTO request) {
 
-            return  campaignService.joinCampaign(id, request.userId(), request.characterId())
+            return campaignService.joinCampaign(id, request.userId(), request.characterId())
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
     }

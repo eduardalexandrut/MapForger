@@ -19,19 +19,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-//@RequiredArgsConstructor
 @Controller
 @RequestMapping("/ws")
 public class LobbyController {
 
     private PresenceService presenceService;
-    private GameSessionRepository gameSessionRepository;
 
-    public  LobbyController(PresenceService presenceService, GameSessionRepository gameSessionRepository) {
+    public  LobbyController(PresenceService presenceService) {
         this.presenceService = presenceService;
-        this.gameSessionRepository = gameSessionRepository;
     }
-
 
     @MessageMapping("/room.{campaignId}.join")
     @SendTo("/topic/room.{campaignId}.presence")
