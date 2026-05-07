@@ -3,6 +3,8 @@ package com.example.mapforgegameplay.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 public class TurnResultDTO {
@@ -16,4 +18,5 @@ public class TurnResultDTO {
     private Integer deadActorId;      // null unless someone died
     private Boolean gameFinished;     // true if no actors remain
     private Integer remainingHp;
+    private LocalDateTime createdAt;
 }

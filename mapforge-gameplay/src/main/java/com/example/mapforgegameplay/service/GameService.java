@@ -235,7 +235,7 @@ public class GameService {
         movementActionRepository.save(action);
 
         return new TurnResultDTO("MOVE", payload.getActorId(),
-                payload.getX(), payload.getY(), null, null, false, null, false, 100);
+                payload.getX(), payload.getY(), null, null, false, null, false, 100, action.getCreatedAt());
     }
 
     private GameSession getActiveSession(UUID campaignId) {
@@ -292,7 +292,7 @@ public class GameService {
         }
 
         return new TurnResultDTO("ATTACK", payload.getActorId(),
-                null, null, payload.getTargetId(), damage, false, null, false, 100);
+                null, null, payload.getTargetId(), damage, false, null, false, 100, action.getCreatedAt());
     }
 
     private TurnResultDTO handleDeath(ActionPayloadDTO payload, Turn turn, UUID campaignId, int damage) {
@@ -331,6 +331,6 @@ public class GameService {
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".death", payload.getTargetId());
 
         return new TurnResultDTO("ATTACK", payload.getActorId(),
-                null, null, payload.getTargetId(), damage, false, payload.getTargetId(), gameFinished, 100);
+                null, null, payload.getTargetId(), damage, false, payload.getTargetId(), gameFinished, 100, death.getCreatedAt());
     }
 }

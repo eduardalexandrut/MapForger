@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -28,4 +29,7 @@ public class DeathAction {
 
     @Column(name = "campaign_id", nullable = false)
     private UUID campaignId;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
