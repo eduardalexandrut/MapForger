@@ -34,7 +34,7 @@ public class MapController {
         return mapService.getMapById(id);
     }
 
-    @GetMapping("/{campaignId}/map")
+    @GetMapping("/{campaignId}/campaigns")
     public Map getMapByCampaignId(@PathVariable UUID campaignId) {
         return mapService.getMapByCampaignId(campaignId);
     }
