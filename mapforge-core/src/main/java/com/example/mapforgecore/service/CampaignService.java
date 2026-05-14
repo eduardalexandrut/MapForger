@@ -4,22 +4,16 @@ import com.example.mapforgecore.model.dto.*;
 import com.example.mapforgecore.model.entity.Campaign;
 import com.example.mapforgecore.model.entity.Map;
 import com.example.mapforgecore.model.entity.User;
-import com.example.mapforgecore.repository.CampaignMemberRepository;
-import com.example.mapforgecore.repository.CampaignRepository;
-import com.example.mapforgecore.repository.MapRepository;
-import com.example.mapforgecore.repository.UserRepository;
+import com.example.mapforgecore.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CampaignService {
     private final CampaignRepository campaignRepository;
     private final UserRepository userRepository;
@@ -27,6 +21,29 @@ public class CampaignService {
     private final MapRepository mapRepository;
     private final CampaignMemberService campaignMemberService;
     private final CampaignActorService campaignActorService;
+    private final GameplayClient gameplayClient;
+    private final CharacterRepository characterRepository;
+    private final CampaignActorRepository campaignActorRepository;
+
+    public CampaignService(CampaignRepository campaignRepository,
+                           UserRepository userRepository,
+                           CampaignMemberRepository campaignMemberRepository,
+                           MapRepository mapRepository,
+                           CampaignMemberService campaignMemberService,
+                           CampaignActorService campaignActorService,
+                           GameplayClient gameplayClient,
+                           CampaignActorRepository campaignActorRepository,
+                           CharacterRepository  characterRepository) {
+        this.campaignRepository = campaignRepository;
+        this.userRepository = userRepository;
+        this.campaignMemberRepository = campaignMemberRepository;
+        this.mapRepository = mapRepository;
+        this.campaignMemberService = campaignMemberService;
+        this.campaignActorService = campaignActorService;
+        this.gameplayClient = gameplayClient;
+        this.campaignActorRepository = campaignActorRepository;
+        this.characterRepository = characterRepository;
+    }
 
 
     public CampaignSummaryDTO createCampaign(CampaignFormDTO campaignFormDTO) {
@@ -91,5 +108,53 @@ public class CampaignService {
 
     public boolean isCampaignMember(String id, Integer userId) {
         return campaignMemberRepository.findByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(id)).isPresent();
+    }
+
+    public CampaignHistoryDisplayDTO getCampaignHistory(String campaignId) {
+        // 1. Fetch raw history from Gameplay via Feign
+        CampaignHistoryDTO raw = gameplayClient.getHistory(UUID.fromString(campaignId));
+
+        // 2. Fetch all actors for this campaign to build id → name map
+        List<CampaignActorBootstrapDTO> actors = campaignActorRepository
+                .findByCampaignId(UUID.fromString(campaignId))
+                .stream()
+                .map(CampaignActorBootstrapDTO::fromEntity)
+                .toList();
+
+        // 3. Build actorId → character name map
+        java.util.Map<Integer, String> actorNames = new HashMap<>();
+        actors.forEach(actor -> {
+            if (actor.getCharacterId() != null) {
+                characterRepository.findById(Integer.valueOf(String.valueOf(actor.getCharacterId())))
+                        .ifPresent(c -> actorNames.put(actor.getId(), c.getName()));
+            }
+        });
+
+        // 4. Enrich turns
+        List<TurnHistoryDisplayDTO> turns = raw.getTurns().stream()
+                .map(turn -> new TurnHistoryDisplayDTO(
+                        turn.getIndex(),
+                        actorNames.getOrDefault(turn.getActorId(), "Actor #" + turn.getActorId()),
+                        turn.getCompleted(),
+                        turn.getActions().stream()
+                                .map(action -> new ActionHistoryDisplayDTO(
+                                        action.getType(),
+                                        actorNames.getOrDefault(action.getActorId(), "Actor #" + action.getActorId()),
+                                        actorNames.getOrDefault(action.getTargetId(), action.getTargetId() != null ? "Actor #" + action.getTargetId() : null),
+                                        action.getX(), action.getY(),
+                                        action.getDamage(),
+                                        actorNames.getOrDefault(action.getKillerId(), null),
+                                        action.getCretedAt()
+                                )).toList()
+                )).toList();
+
+        return new CampaignHistoryDisplayDTO(
+                UUID.fromString(campaignId),
+                raw.getStatus(),
+                raw.getStartedAt(),
+                raw.getFinishedAt(),
+                raw.getTotalTurns(),
+                turns
+        );
     }
 }

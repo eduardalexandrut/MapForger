@@ -214,6 +214,40 @@ public class GameService {
     }
 
     // ---------------------------------------------------------------
+    // PAUSE GAME
+    // ---------------------------------------------------------------
+    @Transactional
+    public GameStateDTO pauseGame(UUID campaignId) {
+        GameSession session = getActiveSession(campaignId);
+        session.setStatus(GameStatus.PAUSED);
+        gameSessionRepository.save(session);
+
+        GameStateDTO state = buildState(session);
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
+        return state;
+    }
+
+    // ---------------------------------------------------------------
+    // RESUME GAME
+    // ---------------------------------------------------------------
+    @Transactional
+    public GameStateDTO resumeGame(UUID campaignId) {
+        GameSession session = gameSessionRepository.findById(campaignId)
+                .orElseThrow(() -> new IllegalStateException("No session found"));
+
+        if (session.getStatus() != GameStatus.PAUSED) {
+            throw new IllegalStateException("Game is not paused");
+        }
+
+        session.setStatus(GameStatus.ACTIVE);
+        gameSessionRepository.save(session);
+
+        GameStateDTO state = buildState(session);
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
+        return state;
+    }
+
+    // ---------------------------------------------------------------
     // PRIVATE HELPERS
     // ---------------------------------------------------------------
 
@@ -318,8 +352,7 @@ public class GameService {
             gameSessionRepository.save(session);
             messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", buildState(session));
         } else {
-            // If the dead actor was at or before the current turn index,
-            // shift the index so the same actor doesn't get skipped/repeated
+            // If the dead actor was at or before the current turn index,shift the index so the same actor doesn't get skipped/repeated
             int currentIndex = session.getCurrentTurnIndex();
             if (deadIndex <= currentIndex && currentIndex > 0) {
                 session.setCurrentTurnIndex(currentIndex - 1);

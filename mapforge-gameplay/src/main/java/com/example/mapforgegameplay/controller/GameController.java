@@ -17,7 +17,7 @@ public class GameController {
 
     private final GameService gameService;
 
-    // Creator starts the game
+    // Master starts the game
     // Client sends to: /app/room.{campaignId}.start
     // Everyone receives on: /topic/room.{campaignId}.state
     @MessageMapping("/room.{campaignId}.start")
@@ -45,10 +45,24 @@ public class GameController {
         gameService.endTurn(UUID.fromString(campaignId), actorId);
     }
 
-    // Creator ends the game
+    // Master ends the game
     // Client sends to: /app/room.{campaignId}.finish
     @MessageMapping("/room.{campaignId}.finish")
     public void finishGame(@DestinationVariable String campaignId) {
         gameService.finishGame(UUID.fromString(campaignId));
+    }
+
+    // Master pauses the game
+    // Client sends to: /app/room.{campaignId}.pause
+    @MessageMapping("/room.{campaignId}.pause")
+    public void pauseGame(@DestinationVariable String campaignId) {
+        gameService.pauseGame(UUID.fromString(campaignId));
+    }
+
+    // Master resumes the game
+    // Client sends to: /app/room.{campaignId}.resume
+    @MessageMapping("/room.{campaignId}.resume")
+    public void resumeGame(@DestinationVariable String campaignId) {
+        gameService.resumeGame(UUID.fromString(campaignId));
     }
 }

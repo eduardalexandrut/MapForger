@@ -25,13 +25,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/campaigns")
-@RequiredArgsConstructor
 public class CampaignController {
 
     private final CampaignRepository campaignRepository;
     private final CampaignService campaignService;
     private final CampaignActorService campaignActorService;
     private final CampaignMemberService campaignMemberService;
+
+    public CampaignController(CampaignRepository campaignRepository, CampaignService campaignService, CampaignActorService campaignActorService, CampaignMemberService campaignMemberService) {
+        this.campaignRepository = campaignRepository;
+        this.campaignService = campaignService;
+        this.campaignActorService = campaignActorService;
+        this.campaignMemberService = campaignMemberService;
+    }
 
 
     @PostMapping
@@ -90,5 +96,11 @@ public class CampaignController {
         return ResponseEntity.ok(this.campaignService.isCampaignMember(id, userId));
 //                .map(ResponseEntity::ok)
 //                .orElse(() -> ResponseEntity.notFound().build());
+    }
+
+    // GET/api/v1/campaigns/{id}/history
+    @GetMapping("/{id}/history")
+    public ResponseEntity<CampaignHistoryDisplayDTO> getCampaignHistory(@PathVariable String id) {
+        return ResponseEntity.ok(campaignService.getCampaignHistory(id));
     }
 }

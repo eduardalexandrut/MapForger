@@ -1,7 +1,6 @@
 package com.example.mapforgegameplay.controller;
 
-import com.example.mapforgegameplay.model.dto.CampaignActorBootstrapDTO;
-import com.example.mapforgegameplay.repository.GameSessionRepository;
+
 import com.example.mapforgegameplay.service.PresenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

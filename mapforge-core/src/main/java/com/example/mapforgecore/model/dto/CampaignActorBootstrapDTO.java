@@ -19,8 +19,10 @@ public class CampaignActorBootstrapDTO {
     private UUID campaignId;
     private Integer x;
     private Integer y;
+    private Integer characterId;
 
     public static CampaignActorBootstrapDTO fromEntity(CampaignActor actor) {
+        assert actor.getCharacter() != null;
         return new CampaignActorBootstrapDTO(
                 actor.getId(),
                 actor.getType(),
@@ -31,7 +33,8 @@ public class CampaignActorBootstrapDTO {
                 actor.getCampaignMember().getOwner().getId(),
                 actor.getCampaignMember().getCampaign().getId(),
                 actor.getX(),
-                actor.getY()
+                actor.getY(),
+                actor.getCharacter().getId()
         );
     }
 }
