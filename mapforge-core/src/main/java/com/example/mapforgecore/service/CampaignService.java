@@ -1,12 +1,12 @@
 package com.example.mapforgecore.service;
 
+import com.example.mapforgecore.constants.DefaultNpcs;
 import com.example.mapforgecore.model.dto.*;
 import com.example.mapforgecore.model.entity.Campaign;
 import com.example.mapforgecore.model.entity.Map;
 import com.example.mapforgecore.model.entity.User;
 import com.example.mapforgecore.repository.*;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +54,18 @@ public class CampaignService {
                 .orElseThrow(() -> new EntityNotFoundException("Map not found"));
 
         Campaign campaign = new Campaign(campaignFormDTO.name(), campaignFormDTO.description(), creator, map, campaignFormDTO.pic());
+
         Campaign saved = campaignRepository.save(campaign);
+
+        //Create default CampaignMember for Npcs
+        campaignMemberService.createCampaignMember(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.HUMANOID.getId());
+        campaignMemberService.createCampaignMember(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.BEAST.getId());
+        campaignMemberService.createCampaignMember(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.UNDEAD.getId());
+
+        //Create default CampaignActor for Npcs
+        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.HUMANOID.getId());
+        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.BEAST.getId());
+        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.UNDEAD.getId());
 
         return CampaignSummaryDTO.fromEntity(saved);
     }
@@ -103,7 +114,7 @@ public class CampaignService {
 
         // 2. Then create actor
         return campaignActorService
-                .createCampaignActor(campaignId, userId, characterId);
+                .createCampaignActorCharacter(campaignId, userId, characterId);
     }
 
     public boolean isCampaignMember(String id, Integer userId) {

@@ -1,15 +1,14 @@
 package com.example.mapforgecore.service;
 
 import com.example.mapforgecore.model.dto.CampaignActorBootstrapDTO;
-import com.example.mapforgecore.model.entity.CampaignActor;
-import com.example.mapforgecore.model.entity.CampaignMember;
+import com.example.mapforgecore.model.entity.*;
 import com.example.mapforgecore.model.entity.Character;
-import com.example.mapforgecore.model.entity.User;
 import com.example.mapforgecore.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -20,8 +19,10 @@ public class CampaignActorService {
     private final CampaignMemberRepository campaignMemberRepository;
     private final CharacterRepository characterRepository;
     private final CampaignActorRepository campaignActorRepository;
+    private final NpcRepository npcRepository;
+    private final Random random = new Random();
 
-    public Optional<CampaignActorBootstrapDTO> createCampaignActor(
+    public Optional<CampaignActorBootstrapDTO> createCampaignActorCharacter(
             String campaignId, Integer userId, Integer characterId) {
 
         Optional<User> user = userRepository.findById(userId);
@@ -37,10 +38,36 @@ public class CampaignActorService {
         campaignActor.setCharacter(character.get());
         campaignActor.setHp(character.get().getArmor());
         campaignActor.setXp(0);
-        campaignActor.setX(0);//FIXME
-        campaignActor.setY(0);//FIXME
+        campaignActor.setX(random.nextInt(30));
+        campaignActor.setY(random.nextInt(30));
         campaignActor.setWeaponDamage(character.get().getWeaponDamage());
         campaignActor.setType("PLAYER");
+        campaignActor.setCampaignMember(campaignMember.get());
+
+        return Optional.of(CampaignActorBootstrapDTO.fromEntity(
+                campaignActorRepository.save(campaignActor)));
+    }
+
+    public Optional<CampaignActorBootstrapDTO> createCampaignActorNpc(
+            String campaignId, Integer userId, Integer npcId) {
+
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Npc> npc = npcRepository.findById(npcId);
+        Optional<CampaignMember> campaignMember = campaignMemberRepository
+                .findByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(campaignId));
+
+        if (user.isEmpty() || npc.isEmpty() || campaignMember.isEmpty()) {
+            return Optional.empty();
+        }
+
+        CampaignActor campaignActor = new CampaignActor();
+        campaignActor.setNpc(npc.get());
+        campaignActor.setHp(npc.get().getArmor());
+        campaignActor.setXp(0);
+        campaignActor.setX(random.nextInt(30));
+        campaignActor.setY(random.nextInt(30));
+        campaignActor.setWeaponDamage(npc.get().getWeaponDamage());
+        campaignActor.setType("NPC");
         campaignActor.setCampaignMember(campaignMember.get());
 
         return Optional.of(CampaignActorBootstrapDTO.fromEntity(

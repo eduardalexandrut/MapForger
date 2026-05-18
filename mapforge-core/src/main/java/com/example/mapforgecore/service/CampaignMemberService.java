@@ -22,9 +22,8 @@ public class CampaignMemberService {
     private final CampaignActorRepository campaignActorRepository;
 
     public Optional<CampaignMemberDetailDTO> createCampaignMember(String campaignId, Integer userId, Integer characterId) {
-        System.out.println("DEBUG: Entering createMember for user: " + userId + " for campaign: " + campaignId);
 
-        // 1. Convert the String ID to UUID safely
+        // Convert the String ID to UUID safely
         UUID campaignUuid;
         try {
             campaignUuid = UUID.fromString(campaignId);
@@ -33,7 +32,7 @@ public class CampaignMemberService {
             return Optional.empty();
         }
 
-        // 2. Fetch Entities
+        // Fetch Entities
         Optional<User> user = userRepository.findById(userId);
         Optional<Campaign> campaign = campaignRepository.findById(campaignUuid);
 
@@ -77,7 +76,6 @@ public class CampaignMemberService {
 
         CampaignMember savedMember = campaignMemberRepository.save(member);
 
-        // Important: Flush the transaction if you want to see the SQL immediately in logs
         campaignMemberRepository.flush();
 
         return Optional.of(CampaignMemberDetailDTO.fromEntity(savedMember));
