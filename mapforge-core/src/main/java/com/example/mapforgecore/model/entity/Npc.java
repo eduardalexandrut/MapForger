@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 
 @Getter
@@ -26,6 +28,14 @@ public class Npc {
     @Column(name = "weapon_damage", nullable = false)
     private Integer weaponDamage;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "hp", nullable = false)
+    private Integer hp;
+
+    @Column(name = "pic", nullable = false)
+    private String pic;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class) // This tells Hibernate to treat it as a PG enum
+    @Column(name = "type")
     private NpcType type;
 }

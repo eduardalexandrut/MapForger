@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum DefaultNpcs {
-    HUMANOID(1,15, 30, 8, NpcType.HUMANOID),
-    BEAST(2, 12, 40, 12, NpcType.BEAST),
-    UNDEAD(3, 18, 20, 15, NpcType.UNDEAD);
+    HUMANOID(1,15, 30, 8, NpcType.humanoid),
+    BEAST(2, 12, 40, 12, NpcType.beast),
+    UNDEAD(3, 18, 20, 15, NpcType.undead);
 
     private final int id;
     private final int armor;

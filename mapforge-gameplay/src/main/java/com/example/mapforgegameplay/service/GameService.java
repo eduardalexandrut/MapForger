@@ -61,6 +61,8 @@ public class GameService {
             actor.setOwnerId(dto.getOwnerId());
             actor.setSpeed(dto.getSpeed());
             actor.setCampaignId(campaignId);
+            actor.setX(dto.getX());
+            actor.setY(dto.getY());
             return actor;
         }).toList();
 

@@ -63,9 +63,9 @@ public class CampaignService {
         campaignMemberService.createCampaignMember(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.UNDEAD.getId());
 
         //Create default CampaignActor for Npcs
-        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.HUMANOID.getId());
-        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.BEAST.getId());
-        campaignActorService.createCampaignActorCharacter(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.UNDEAD.getId());
+        campaignActorService.createCampaignActorNpc(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.HUMANOID.getId());
+        campaignActorService.createCampaignActorNpc(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.BEAST.getId());
+        campaignActorService.createCampaignActorNpc(String.valueOf(saved.getId()), creator.getId(), DefaultNpcs.UNDEAD.getId());
 
         return CampaignSummaryDTO.fromEntity(saved);
     }

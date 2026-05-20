@@ -21,6 +21,7 @@ public class CampaignActorService {
     private final CampaignActorRepository campaignActorRepository;
     private final NpcRepository npcRepository;
     private final Random random = new Random();
+    private final MapRepository mapRepository;
 
     public Optional<CampaignActorBootstrapDTO> createCampaignActorCharacter(
             String campaignId, Integer userId, Integer characterId) {
@@ -29,8 +30,9 @@ public class CampaignActorService {
         Optional<Character> character = characterRepository.findById(characterId);
         Optional<CampaignMember> campaignMember = campaignMemberRepository
                 .findByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(campaignId));
+        Optional<Map> map = mapRepository.findByCampaignId(UUID.fromString(campaignId));
 
-        if (user.isEmpty() || character.isEmpty() || campaignMember.isEmpty()) {
+        if (user.isEmpty() || character.isEmpty() || campaignMember.isEmpty() || map.isEmpty()) {
             return Optional.empty();
         }
 
@@ -38,8 +40,8 @@ public class CampaignActorService {
         campaignActor.setCharacter(character.get());
         campaignActor.setHp(character.get().getArmor());
         campaignActor.setXp(0);
-        campaignActor.setX(random.nextInt(30));
-        campaignActor.setY(random.nextInt(30));
+        campaignActor.setX(random.nextInt(map.get().getWidth()));
+        campaignActor.setY(random.nextInt(map.get().getHeight()));
         campaignActor.setWeaponDamage(character.get().getWeaponDamage());
         campaignActor.setType("PLAYER");
         campaignActor.setCampaignMember(campaignMember.get());
@@ -55,8 +57,9 @@ public class CampaignActorService {
         Optional<Npc> npc = npcRepository.findById(npcId);
         Optional<CampaignMember> campaignMember = campaignMemberRepository
                 .findByIdOwnerIdAndIdCampaignId(userId, UUID.fromString(campaignId));
+        Optional<Map> map = mapRepository.findByCampaignId(UUID.fromString(campaignId));
 
-        if (user.isEmpty() || npc.isEmpty() || campaignMember.isEmpty()) {
+        if (user.isEmpty() || npc.isEmpty() || campaignMember.isEmpty() || map.isEmpty()) {
             return Optional.empty();
         }
 
@@ -64,8 +67,8 @@ public class CampaignActorService {
         campaignActor.setNpc(npc.get());
         campaignActor.setHp(npc.get().getArmor());
         campaignActor.setXp(0);
-        campaignActor.setX(random.nextInt(30));
-        campaignActor.setY(random.nextInt(30));
+        campaignActor.setX(random.nextInt(map.get().getWidth()));
+        campaignActor.setY(random.nextInt(map.get().getHeight()));
         campaignActor.setWeaponDamage(npc.get().getWeaponDamage());
         campaignActor.setType("NPC");
         campaignActor.setCampaignMember(campaignMember.get());

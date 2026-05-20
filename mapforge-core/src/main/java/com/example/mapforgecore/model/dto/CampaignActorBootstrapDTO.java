@@ -28,13 +28,19 @@ public class CampaignActorBootstrapDTO {
                 actor.getType(),
                 actor.getHp(),
                 actor.getXp(),
-                actor.getCharacter() != null ? actor.getCharacter().getWeaponDamage() : 0,
-                actor.getCharacter() != null ? actor.getCharacter().getSpeed() : 0,
+                actor.getCharacter() != null
+                        ? actor.getCharacter().getWeaponDamage()
+                        : actor.getNpc() != null ? actor.getNpc().getWeaponDamage() : 0,
+                actor.getCharacter() != null
+                        ? actor.getCharacter().getSpeed()
+                        : actor.getNpc() != null ? actor.getNpc().getSpeed() : 0,
                 actor.getCampaignMember().getOwner().getId(),
                 actor.getCampaignMember().getCampaign().getId(),
                 actor.getX(),
                 actor.getY(),
-                actor.getCharacter().getId()
+                actor.getCharacter() != null
+                        ? actor.getCharacter().getId()
+                        : actor.getNpc().getId()
         );
     }
 }

@@ -16,6 +16,7 @@ public record CampaignSummaryDTO(UUID id, UserSummaryDTO creator, String name, S
         Optional<Set<CampaignMember>> campaignMembers = Optional.ofNullable(campaign.getCampaignMembers());
 
         if (campaignMembers.isPresent()) {
+
             return new CampaignSummaryDTO(
                     campaign.getId(),
                     UserSummaryDTO.fromEntity(campaign.getCreator()),

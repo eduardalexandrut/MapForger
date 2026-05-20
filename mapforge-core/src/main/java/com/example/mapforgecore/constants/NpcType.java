@@ -1,9 +1,9 @@
 package com.example.mapforgecore.constants;
 
 public enum NpcType {
-            HUMANOID,
-            BEAST,
-            UNDEAD,
+            humanoid,
+            beast,
+            undead,
             FRIEND,
             CELESTIAL,
             DRAGON,
