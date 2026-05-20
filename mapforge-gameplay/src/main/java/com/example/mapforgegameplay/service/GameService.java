@@ -63,6 +63,8 @@ public class GameService {
             actor.setCampaignId(campaignId);
             actor.setX(dto.getX());
             actor.setY(dto.getY());
+            actor.setCharacterId(dto.getCharacterId());
+            actor.setNpcId(dto.getNpcId());
             return actor;
         }).toList();
 

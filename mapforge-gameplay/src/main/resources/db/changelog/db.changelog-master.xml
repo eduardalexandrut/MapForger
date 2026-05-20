@@ -9,5 +9,6 @@
     <include file="db/changelog/changes/002-add-position-to-campaign-actors.sql"/>
     <include file="db/changelog/changes/003-add-speed-to-campaign-actors.sql"/>
     <include file="db/changelog/changes/004-add-created-time-in-actions.sql"/>
+    <include file="db/changelog/changes/005-add-characterId-and-npcId-to-campaign-actors.sql"/>
 
 </databaseChangeLog>

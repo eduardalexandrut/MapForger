@@ -20,6 +20,7 @@ public class CampaignActorBootstrapDTO {
     private Integer x;
     private Integer y;
     private Integer characterId;
+    private Integer npcId;
 
     public static CampaignActorBootstrapDTO fromEntity(CampaignActor actor) {
         assert actor.getCharacter() != null;
@@ -40,7 +41,10 @@ public class CampaignActorBootstrapDTO {
                 actor.getY(),
                 actor.getCharacter() != null
                         ? actor.getCharacter().getId()
-                        : actor.getNpc().getId()
+                        : null,
+                actor.getNpc() != null
+                    ? actor.getNpc().getId()
+                        : null
         );
     }
 }
