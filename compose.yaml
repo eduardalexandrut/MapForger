@@ -6,6 +6,12 @@ services:
     container_name: mapforge-eureka
     ports:
       - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - microservices-net
 
@@ -20,6 +26,12 @@ services:
       - "5432:5432"
     volumes:
       - core_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d MapForge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - microservices-net
 
@@ -34,6 +46,12 @@ services:
       - "5433:5432"
     volumes:
       - gameplay_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d MapForgeGameplay"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - microservices-net
 
@@ -45,8 +63,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     depends_on:
-      - mapforge-eureka
-      - db-core
+      mapforge-eureka:
+        condition: service_healthy
+      db-core:
+        condition: service_healthy
     ports:
       - "8082:8082"
     networks:
@@ -60,8 +80,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     depends_on:
-      - mapforge-eureka
-      - db-gameplay
+      mapforge-eureka:
+        condition: service_healthy
+      db-gameplay:
+        condition: service_healthy
     ports:
       - "8081:8081"
     networks:
@@ -73,7 +95,8 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://mapforge-eureka:8761/eureka/
     depends_on:
-      - mapforge-eureka
+      mapforge-eureka:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
