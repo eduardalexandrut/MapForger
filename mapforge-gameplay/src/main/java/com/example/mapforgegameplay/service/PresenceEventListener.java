@@ -1,5 +1,6 @@
 package com.example.mapforgegameplay.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -18,6 +19,7 @@ public class PresenceEventListener {
     }
 
     @EventListener
+    @Transactional
     public void handleSessionDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
 
