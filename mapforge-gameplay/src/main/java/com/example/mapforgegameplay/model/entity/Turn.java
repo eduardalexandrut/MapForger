@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -21,6 +22,9 @@ public class Turn {
 
     @Column(name = "completed", nullable = false)
     private Boolean completed = false;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     public static Turn create(UUID campaignId, Integer index, Integer actorId) {
         Turn t = new Turn();

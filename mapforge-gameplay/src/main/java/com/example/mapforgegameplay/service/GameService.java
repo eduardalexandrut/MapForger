@@ -9,9 +9,11 @@ import com.example.mapforgegameplay.model.entity.Map;
 import com.example.mapforgegameplay.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -249,6 +251,16 @@ public class GameService {
         GameStateDTO state = buildState(session);
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
         return state;
+    }
+
+    @Scheduled(fixedDelay = 30000)
+    public void checkStaleTurns() {
+        gameSessionRepository.findAllActive().forEach(session -> {
+            Turn current = getCurrentTurn(session);
+            if (current.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+                endTurn(session.getCampaignId(), current.getActorId());
+            }
+        });
     }
 
     // ---------------------------------------------------------------
