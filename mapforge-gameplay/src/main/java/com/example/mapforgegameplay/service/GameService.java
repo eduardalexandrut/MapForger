@@ -31,9 +31,7 @@ public class GameService {
     private final CoreClient coreClient;
     private UUID campaignId;
 
-    // ---------------------------------------------------------------
-    // START GAME
-    // ---------------------------------------------------------------
+    // Start game
 
     @Transactional
     public GameStateDTO startGame(UUID campaignId) {
@@ -45,7 +43,7 @@ public class GameService {
 
         this.campaignId = campaignId;
 
-        // 1. Fetch actors from MapForge
+        // Fetch actors from MapForge
         List<CampaignActorBootstrapDTO> bootstrapActors = coreClient.getActorsForCampaign(campaignId);
 
 
@@ -72,32 +70,29 @@ public class GameService {
 
         campaignActorRepository.saveAll(actors);
 
-        // 2. Build turn order — simple: just the order they come back from DB
-        //    You can shuffle or sort by initiative here later
+        // Build turn order
         List<Integer> turnOrder = actors.stream()
                 .map(CampaignActor::getId)
                 .toList();
 
-        // 3. Create and persist GameSession
+        // Create and persist GameSession
         GameSession session = GameSession.create(campaignId);
         session.start();
         session.getTurnOrder().addAll(turnOrder);
         gameSessionRepository.save(session);
 
-        // 4. Create first Turn
+        // Create first Turn
         Integer firstActorId = turnOrder.get(0);
         turnRepository.save(Turn.create(campaignId, 0, firstActorId));
 
-        // 5. Build and broadcast state
+        // Build and broadcast state
         GameStateDTO state = buildState(session);
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
 
         return state;
     }
 
-    // ---------------------------------------------------------------
-    // HANDLE ACTION
-    // ---------------------------------------------------------------
+    // Handle action
 
     @Transactional
     public void handleAction(UUID campaignId, ActionPayloadDTO payload) {
@@ -125,6 +120,103 @@ public class GameService {
         // Broadcast action result
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".action", result);
     }
+
+
+    private Map getCurrentMap(UUID campaignId) {
+        return coreClient.getMapByCampaignId(campaignId);
+    }
+
+    // End turn
+    @Transactional
+    public GameStateDTO endTurn(UUID campaignId, Integer actorId) {
+        GameSession session = getActiveSession(campaignId);
+        Turn currentTurn = getCurrentTurn(session);
+
+        if (!currentTurn.getActorId().equals(actorId)) {
+            throw new IllegalStateException("Actor " + actorId + " cannot end turn — not their turn");
+        }
+
+        // Mark current turn complete
+        currentTurn.setCompleted(true);
+        turnRepository.save(currentTurn);
+
+        // Advance turn index
+        int nextIndex = session.getCurrentTurnIndex() + 1;
+        List<Integer> order = session.getTurnOrder();
+        Integer nextActorId = order.get(nextIndex % order.size());
+
+        session.setCurrentTurnIndex(nextIndex);
+        gameSessionRepository.save(session);
+
+        // Create next Turn
+        turnRepository.save(Turn.create(campaignId, nextIndex, nextActorId));
+
+        // Broadcast new state
+        GameStateDTO state = buildState(session);
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
+
+        return state;
+    }
+
+    // Finish Game
+    @Transactional
+    public void finishGame(UUID campaignId) {
+        GameSession session = getActiveSession(campaignId);
+        session.finish();
+        gameSessionRepository.save(session);
+
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", buildState(session));
+    }
+
+    // Pause Game
+    @Transactional
+    public GameStateDTO pauseGame(UUID campaignId) {
+        GameSession session = getActiveSession(campaignId);
+        session.setStatus(GameStatus.PAUSED);
+        gameSessionRepository.save(session);
+
+        GameStateDTO state = buildState(session);
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
+        return state;
+    }
+
+    // Resume game
+    @Transactional
+    public GameStateDTO resumeGame(UUID campaignId) {
+        GameSession session = gameSessionRepository.findById(campaignId)
+                .orElseThrow(() -> new IllegalStateException("No session found"));
+
+        if (session.getStatus() != GameStatus.PAUSED) {
+            throw new IllegalStateException("Game is not paused");
+        }
+
+        session.setStatus(GameStatus.ACTIVE);
+        gameSessionRepository.save(session);
+
+        GameStateDTO state = buildState(session);
+        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
+        return state;
+    }
+
+    // Check for stale turns and skip them
+    @Scheduled(fixedDelay = 30000)
+    @Transactional
+    public void checkStaleTurns() {
+        gameSessionRepository.findAllActive().forEach(session -> {
+            try {
+                Turn current = getCurrentTurn(session);
+                if (current.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+                    System.out.println("Auto-ending stale turn for campaign: " + session.getCampaignId());
+                    endTurn(session.getCampaignId(), current.getActorId());
+                }
+            } catch (Exception e) {
+                System.err.println("Error checking stale turn for campaign "
+                        + session.getCampaignId() + ": " + e.getMessage());
+            }
+        });
+    }
+
+    // Helpers
 
     private boolean isMovementValid(ActionPayloadDTO payload, Map currentMap) {
         final boolean cellIsValid = payload.getX() >= 0 && payload.getX() < currentMap.getWidth()
@@ -166,113 +258,6 @@ public class GameService {
 
         return true;
     }
-
-    private Map getCurrentMap(UUID campaignId) {
-        return coreClient.getMapByCampaignId(campaignId);
-    }
-
-    // ---------------------------------------------------------------
-    // END TURN
-    // ---------------------------------------------------------------
-
-    @Transactional
-    public GameStateDTO endTurn(UUID campaignId, Integer actorId) {
-        GameSession session = getActiveSession(campaignId);
-        Turn currentTurn = getCurrentTurn(session);
-
-        if (!currentTurn.getActorId().equals(actorId)) {
-            throw new IllegalStateException("Actor " + actorId + " cannot end turn — not their turn");
-        }
-
-        // Mark current turn complete
-        currentTurn.setCompleted(true);
-        turnRepository.save(currentTurn);
-
-        // Advance turn index
-        int nextIndex = session.getCurrentTurnIndex() + 1;
-        List<Integer> order = session.getTurnOrder();
-        Integer nextActorId = order.get(nextIndex % order.size());
-
-        session.setCurrentTurnIndex(nextIndex);
-        gameSessionRepository.save(session);
-
-        // Create next Turn
-        turnRepository.save(Turn.create(campaignId, nextIndex, nextActorId));
-
-        // Broadcast new state
-        GameStateDTO state = buildState(session);
-        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
-
-        return state;
-    }
-
-    // ---------------------------------------------------------------
-    // FINISH GAME
-    // ---------------------------------------------------------------
-
-    @Transactional
-    public void finishGame(UUID campaignId) {
-        GameSession session = getActiveSession(campaignId);
-        session.finish();
-        gameSessionRepository.save(session);
-
-        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", buildState(session));
-    }
-
-    // ---------------------------------------------------------------
-    // PAUSE GAME
-    // ---------------------------------------------------------------
-    @Transactional
-    public GameStateDTO pauseGame(UUID campaignId) {
-        GameSession session = getActiveSession(campaignId);
-        session.setStatus(GameStatus.PAUSED);
-        gameSessionRepository.save(session);
-
-        GameStateDTO state = buildState(session);
-        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
-        return state;
-    }
-
-    // ---------------------------------------------------------------
-    // RESUME GAME
-    // ---------------------------------------------------------------
-    @Transactional
-    public GameStateDTO resumeGame(UUID campaignId) {
-        GameSession session = gameSessionRepository.findById(campaignId)
-                .orElseThrow(() -> new IllegalStateException("No session found"));
-
-        if (session.getStatus() != GameStatus.PAUSED) {
-            throw new IllegalStateException("Game is not paused");
-        }
-
-        session.setStatus(GameStatus.ACTIVE);
-        gameSessionRepository.save(session);
-
-        GameStateDTO state = buildState(session);
-        messagingTemplate.convertAndSend("/topic/room." + campaignId + ".state", state);
-        return state;
-    }
-
-    @Scheduled(fixedDelay = 30000)
-    @Transactional
-    public void checkStaleTurns() {
-        gameSessionRepository.findAllActive().forEach(session -> {
-            try {
-                Turn current = getCurrentTurn(session);
-                if (current.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
-                    System.out.println("Auto-ending stale turn for campaign: " + session.getCampaignId());
-                    endTurn(session.getCampaignId(), current.getActorId());
-                }
-            } catch (Exception e) {
-                System.err.println("Error checking stale turn for campaign "
-                        + session.getCampaignId() + ": " + e.getMessage());
-            }
-        });
-    }
-
-    // ---------------------------------------------------------------
-    // PRIVATE HELPERS
-    // ---------------------------------------------------------------
 
     private TurnResultDTO handleMove(ActionPayloadDTO payload, Turn turn, UUID campaignId) {
         // Update actor position
@@ -353,7 +338,7 @@ public class GameService {
     }
 
     private TurnResultDTO handleDeath(ActionPayloadDTO payload, Turn turn, UUID campaignId, int damage) {
-        // 1. Persist DeathAction
+        // Persist DeathAction
         DeathAction death = new DeathAction();
         death.setActorId(payload.getTargetId());
         death.setKillerId(payload.getActorId());
@@ -361,7 +346,7 @@ public class GameService {
         death.setCampaignId(campaignId);
         deathActionRepository.save(death);
 
-        // 2. Remove dead actor from turn order
+        // Remove dead actor from turn order
         GameSession session = getActiveSession(campaignId);
         List<Integer> order = session.getTurnOrder();
         int deadIndex = order.indexOf(payload.getTargetId());
@@ -383,7 +368,7 @@ public class GameService {
             gameSessionRepository.save(session);
         }
 
-        // 3. Broadcast death event separately so the client knows who to spectate
+        // Broadcast death event separately so the client knows who to spectate
         messagingTemplate.convertAndSend("/topic/room." + campaignId + ".death", payload.getTargetId());
 
         return new TurnResultDTO("ATTACK", payload.getActorId(),
