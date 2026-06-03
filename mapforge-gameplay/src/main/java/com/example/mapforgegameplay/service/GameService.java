@@ -254,11 +254,18 @@ public class GameService {
     }
 
     @Scheduled(fixedDelay = 30000)
+    @Transactional
     public void checkStaleTurns() {
         gameSessionRepository.findAllActive().forEach(session -> {
-            Turn current = getCurrentTurn(session);
-            if (current.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
-                endTurn(session.getCampaignId(), current.getActorId());
+            try {
+                Turn current = getCurrentTurn(session);
+                if (current.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+                    System.out.println("Auto-ending stale turn for campaign: " + session.getCampaignId());
+                    endTurn(session.getCampaignId(), current.getActorId());
+                }
+            } catch (Exception e) {
+                System.err.println("Error checking stale turn for campaign "
+                        + session.getCampaignId() + ": " + e.getMessage());
             }
         });
     }

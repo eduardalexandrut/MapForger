@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ActionPayloadDTO {
+//    private String ac
     private Integer actorId;           // who is acting (must match current turn)
     private String type;               // "MOVE" or "ATTACK"
 

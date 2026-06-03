@@ -31,6 +31,7 @@ public class Turn {
         t.id = new TurnPK(index, campaignId);
         t.actorId = actorId;
         t.completed = false;
+        t.createdAt = LocalDateTime.now();
         return t;
     }
 }
