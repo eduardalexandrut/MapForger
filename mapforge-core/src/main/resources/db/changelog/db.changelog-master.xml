@@ -10,20 +10,5 @@
     <include file="006-add-position-to-campaign-actors.sql" relativeToChangelogFile="true"/>
     <include file="007-add-default-npcs.sql" relativeToChangelogFile="true"/>
     <include file="008-add-pic-and-hp-to-npcs.sql" relativeToChangelogFile="true"/>
-<!--    <include file="26-08-2025-add-test-column-to-users.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="26-08-2025-remove-test-column-from-users.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="30-08-2025-change-campaigns-pk-to-string.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="31-08-2025-add-foreignkey-campaign_actor-to-campaign_member.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="07-09-2025-remove-ref-id-from-campaign-actors.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="07-09-2025-add-characters-and-npcs-fks-to-campaing-actors.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-characters-backstory.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-characters-description.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-characters-and-user-pic.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-campaign-pic.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-joined-column-to-users.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="20-01-2026-add-created-at-column.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="22-01-2026-change-pic-type-to-varchar.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="22-01-2026-add-fk-campaigns-users.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="27-04-2026-add-x-y-cols-to-campaignactor.sql" relativeToChangelogFile="true"/>-->
-<!--    <include file="27-04-2026-move-gameplay-tables-to-gameplay-service.sql" relativeToChangelogFile="true"/>-->
+    <include file="009-add-pic-to-campaign-actors.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

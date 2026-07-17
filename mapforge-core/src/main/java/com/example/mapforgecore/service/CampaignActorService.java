@@ -45,6 +45,7 @@ public class CampaignActorService {
         campaignActor.setWeaponDamage(character.get().getWeaponDamage());
         campaignActor.setType("PLAYER");
         campaignActor.setCampaignMember(campaignMember.get());
+        campaignActor.setPic(character.get().getPic());
 
         return Optional.of(CampaignActorBootstrapDTO.fromEntity(
                 campaignActorRepository.save(campaignActor)));
@@ -72,6 +73,7 @@ public class CampaignActorService {
         campaignActor.setWeaponDamage(npc.get().getWeaponDamage());
         campaignActor.setType("NPC");
         campaignActor.setCampaignMember(campaignMember.get());
+        campaignActor.setPic(npc.get().getPic());
 
         return Optional.of(CampaignActorBootstrapDTO.fromEntity(
                 campaignActorRepository.save(campaignActor)));

@@ -53,5 +53,8 @@ public class CampaignActor {
     @Column(name = "npcId")
     private Integer npcId;
 
+    @Column(name = "pic")
+    private String pic;
+
 
 }

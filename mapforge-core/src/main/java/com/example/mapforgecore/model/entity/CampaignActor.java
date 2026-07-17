@@ -53,4 +53,7 @@ public class CampaignActor {
 
     @Column(name = "y")
     private Integer y;
+
+    @Column(name = "pic")
+    private String pic;
 }

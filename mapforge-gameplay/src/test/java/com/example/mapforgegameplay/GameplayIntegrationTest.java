@@ -56,9 +56,9 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         Map mockMap = new Map(1, "Arena", "Desc", 20, 20, "pic.png", null);
         // CampaignActors
         List<CampaignActorBootstrapDTO> campaignActors = List.of(
-                new CampaignActorBootstrapDTO(1, "CHARACTER", 100, 0, 15, 3, 1, campaignId, 0, 0),
-                new CampaignActorBootstrapDTO(2, "CHARACTER", 80, 0, 20, 3, 2, campaignId, 1, 1),
-                new CampaignActorBootstrapDTO(3, "CHARACTER", 60, 0, 10, 3, 3, campaignId, 2, 2)
+                new CampaignActorBootstrapDTO(1, "CHARACTER", 100, 0, 15, 3, 1, campaignId, 0, 0, 1, 1, ""),
+                new CampaignActorBootstrapDTO(2, "CHARACTER", 80, 0, 20, 3, 2, campaignId, 1, 1, 1, 2, ""),
+                new CampaignActorBootstrapDTO(3, "CHARACTER", 60, 0, 10, 3, 3, campaignId, 2, 2, 1,3, "")
         );
 
         Mockito.when(coreClient.getMapByCampaignId(any(UUID.class)))
@@ -80,16 +80,16 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         ActionPayloadDTO payload = new ActionPayloadDTO();
         payload.setActorId(1);
         payload.setType("MOVE");
-        payload.setX(3);
-        payload.setY(5);
+        payload.setX(1); // Changed from 3 to 1
+        payload.setY(3); // Changed from 5 to 3
 
         assertThatNoException().isThrownBy(() ->
                 gameService.handleAction(campaignId, payload));
 
         List<MovementAction> moves = movementActionRepository.findAll();
         assertThat(moves).hasSize(1);
-        assertThat(moves.getFirst().getX()).isEqualTo(3);
-        assertThat(moves.getFirst().getY()).isEqualTo(5);
+        assertThat(moves.getFirst().getX()).isEqualTo(1);
+        assertThat(moves.getFirst().getY()).isEqualTo(3);
     }
 
     @Test
@@ -123,21 +123,23 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
     @Test
     @DisplayName("Invalid move — target cell already occupied by another actor")
     void shouldRejectMoveToOccupiedCell() {
-        // Move actor 1 to (3, 5)
+        // Move actor 1 to (0, 3)
+        // Starting at (0, 0), distance is 3 (Valid, Speed is 3). No one is here.
         ActionPayloadDTO first = new ActionPayloadDTO();
         first.setActorId(1);
         first.setType("MOVE");
-        first.setX(3);
-        first.setY(5);
+        first.setX(0);
+        first.setY(3);
         gameService.handleAction(campaignId, first);
         gameService.endTurn(campaignId, 1);
 
-        // Actor 2 tries to move to the same cell
+        // Actor 2 tries to move to the same cell (0, 3)
+        // Starting at (1, 1), distance is max(1, 2) = 2 (Valid speed, but now occupied by Actor 1!)
         ActionPayloadDTO second = new ActionPayloadDTO();
         second.setActorId(2);
         second.setType("MOVE");
-        second.setX(3);
-        second.setY(5);
+        second.setX(0);
+        second.setY(3);
 
         assertThatThrownBy(() -> gameService.handleAction(campaignId, second))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -164,8 +166,8 @@ class GameplayIntegrationTest extends BaseGameplayIntegrationTest {
         ActionPayloadDTO payload = new ActionPayloadDTO();
         payload.setActorId(1);
         payload.setType("MOVE");
-        payload.setX(2);  // distance 2 from origin, speed is 3
-        payload.setY(2);
+        payload.setX(0);  // Changed from 2 -> 0. Distance from (0,0) is 2.
+        payload.setY(2);  // Keep at 2.
 
         assertThatNoException().isThrownBy(() ->
                 gameService.handleAction(campaignId, payload));

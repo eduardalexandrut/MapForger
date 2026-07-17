@@ -21,9 +21,10 @@ public class CampaignActorBootstrapDTO {
     private Integer y;
     private Integer characterId;
     private Integer npcId;
+    private String pic;
 
     public static CampaignActorBootstrapDTO fromEntity(CampaignActor actor) {
-        assert actor.getCharacter() != null;
+//        assert actor.getCharacter() != null;
         return new CampaignActorBootstrapDTO(
                 actor.getId(),
                 actor.getType(),
@@ -44,7 +45,10 @@ public class CampaignActorBootstrapDTO {
                         : null,
                 actor.getNpc() != null
                     ? actor.getNpc().getId()
-                        : null
+                        : null,
+                actor.getCharacter() != null
+                ? actor.getCharacter().getPic()
+                        : actor.getNpc() != null ? actor.getNpc().getPic() : "ciao"
         );
     }
 }

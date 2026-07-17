@@ -23,6 +23,7 @@ public class CampaignActorBootstrapDTO {
     private Integer y;
     private Integer characterId;
     private Integer npcId;
+    private String pic;
 
     public static CampaignActorBootstrapDTO fromEntity(CampaignActor actor) {
         return new CampaignActorBootstrapDTO(
@@ -37,7 +38,8 @@ public class CampaignActorBootstrapDTO {
                 actor.getX(),
                 actor.getY(),
                 actor.getCharacterId(),
-                actor.getNpcId()
+                actor.getNpcId(),
+                actor.getPic()
         );
     }
 }
